@@ -14,7 +14,7 @@ COURSES = [
     {
         "slug": "diseno-grafico",
         "title": "Diseño Gráfico",
-        "category": "Creatividad",
+        "category": "Arte y diseño",
         "color": "#E0567A",
         "summary": "Domina los fundamentos visuales, la tipografía, el color y las herramientas profesionales para crear piezas de marca, digitales e impresas.",
         "modules": [
@@ -240,6 +240,19 @@ def _merge() -> None:
 
 
 _merge()
+
+# 35 cursos de ciencias, ciencias sociales, arte, diseño y comunicación (temas separados por «; »)
+from .cursos_artes import COURSES_ARTES  # noqa: E402
+from .cursos_ciencias import COURSES_CIENCIAS  # noqa: E402
+from .cursos_sociales import COURSES_SOCIALES  # noqa: E402
+from .fuentes_nuevos import SOURCES_NUEVOS  # noqa: E402
+
+for _c in [*COURSES_CIENCIAS, *COURSES_SOCIALES, *COURSES_ARTES]:
+    COURSES.append({
+        **_c,
+        "modules": [(title, [t.strip() for t in topics.split(";")]) for title, topics in _c["modules"]],
+        "sources": SOURCES_NUEVOS[_c["slug"]],
+    })
 
 # Cursos de idiomas (30 idiomas + Lengua de Señas Colombiana), ya con sus 10 módulos y fuentes
 from .idiomas import language_courses  # noqa: E402

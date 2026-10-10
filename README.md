@@ -2,7 +2,7 @@
 
 CURSOS DE NOVA GRATUITO Y CON SUSCRIPCIÓN
 
-Plataforma de cursos de **ORION NOVA TECHNOLOGIES**: 15 cursos, 10 módulos por curso y 12 temas por módulo (1.800 temas).
+Plataforma de cursos de **ORION NOVA TECHNOLOGIES**: 81 cursos (50 generales y 31 de idiomas), 10 módulos por curso y 12 temas por módulo (9.720 temas, 120 horas por curso).
 Los módulos 1 al 5 son gratis. Los módulos 6 al 10 y el certificado (120 horas) se pagan.
 **Idiomas:** 30 idiomas (A1 a C1) y la Lengua de Señas Colombiana, con práctica de escucha, lectura, dictado y pronunciación con la voz de NOVA (`backend/app/data/idiomas.py` y `frontend/src/idiomas/`).
 Cada curso tiene una sección de **Fuentes y referencias** con documentos oficiales verificados (`backend/app/data/fuentes.py`).
@@ -23,11 +23,12 @@ nadie ve los módulos 6 al 10 sin pagar, y solo el servidor Python puede activar
 En Supabase, entra al proyecto **NOVA COURSE** y ve a **SQL Editor → New query**.
 
 1. Abre `supabase/01_esquema.sql`, copia todo, pégalo y pulsa **Run**.
-2. Abre `supabase/02_cursos.sql`, copia todo, pégalo y pulsa **Run**. Al final debe mostrar `15 | 150 | 1800 | 1800 | 63`.
+2. Abre `supabase/02_cursos_parte1.sql` (cursos generales), cópialo, pégalo y pulsa **Run**.
+3. Abre `supabase/02_cursos_parte2_idiomas.sql` (idiomas), cópialo, pégalo y pulsa **Run**. Al final debe mostrar `81 | 810 | 9720 | 9720 | 189`.
 
 ## Actualizar una base ya creada
 
-Si ya habías cargado la versión de 5 módulos, vuelve a ejecutar **01_esquema.sql** y luego **02_cursos.sql**.
+Si ya habías cargado una versión anterior, vuelve a ejecutar **01_esquema.sql**, **02_cursos_parte1.sql** y **02_cursos_parte2_idiomas.sql**, en ese orden.
 No se pierden usuarios, avances, pagos ni certificados.
 
 ## Paso 2. Configurar el registro de usuarios
@@ -126,14 +127,15 @@ Mientras no haya llaves de Wompi, el botón de pago abre un **modo de prueba** q
 ## Agregar o cambiar cursos
 
 Edita `backend/app/data/catalog.py` (módulos 1-5), `catalog_avanzado.py` (módulos 6-10) o `fuentes.py`, ejecuta
-`python scripts/generar_sql_cursos.py` y vuelve a correr `supabase/02_cursos.sql`.
+`python scripts/generar_sql_cursos.py` y vuelve a correr los archivos `supabase/02_cursos_parte*.sql`.
 Eso no borra el contenido que ya escribiste desde el panel de administración.
 
 ## Estructura
 
 ```
 supabase/01_esquema.sql        tablas, seguridad y funciones
-supabase/02_cursos.sql         15 cursos y 900 temas
+supabase/02_cursos_parte1.sql  cursos generales
+supabase/02_cursos_parte2_idiomas.sql  cursos de idiomas
 supabase/03_administrador.sql  convertir tu cuenta en administrador
 frontend/                      web React + TypeScript
 backend/                       servidor Python (FastAPI): pagos Wompi y PDF
