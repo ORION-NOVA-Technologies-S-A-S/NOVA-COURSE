@@ -14,7 +14,8 @@ export function Home() {
     <>
       <section className="hero">
         <div className="wrap hero-inner">
-          <span className="eyebrow">ORION NOVA TECHNOLOGIES · ACADEMY</span>
+          <img className="hero-logo" src="logo-orion-nova-520.jpg" alt="Orion Nova Technologies" width="260" height="260" />
+          <span className="eyebrow">ORION NOVA TECHNOLOGIES · NOVA COURSE</span>
           <h1>Aprende lo que mueve el futuro. <em>Empieza gratis.</em></h1>
           <p className="lead">
             {courses.length || 15} cursos con 5 módulos y 12 temas cada uno. Los 3 primeros módulos son gratis; desbloquea

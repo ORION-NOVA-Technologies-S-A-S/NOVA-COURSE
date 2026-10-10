@@ -4,14 +4,11 @@ import { supabaseConfigured } from "../supabase";
 
 export function Logo() {
   return (
-    <Link to="/" className="logo" aria-label="Orion Nova Academy, inicio">
-      <svg viewBox="0 0 64 64" width="34" height="34" aria-hidden>
-        <circle cx="32" cy="32" r="17" fill="none" stroke="var(--indigo)" strokeWidth="5" />
-        <circle cx="46" cy="18" r="5.5" fill="var(--silver)" />
-      </svg>
+    <Link to="/" className="logo" aria-label="NOVA COURSE de Orion Nova Technologies, inicio">
+      <img src="logo-emblema.png" alt="" width="38" height="38" className="logo-img" />
       <span>
         <b>ORION NOVA</b>
-        <small>ACADEMY</small>
+        <small>NOVA COURSE</small>
       </span>
     </Link>
   );
@@ -48,10 +45,12 @@ export function Layout() {
         <Outlet />
       </main>
       <footer className="footer">
-        <div className="wrap">
-          <Logo />
+        <div className="wrap footer-inner">
+          <img src="logo-orion-nova-520.jpg" alt="Orion Nova Technologies — Innovamos · Desarrollamos · Conectamos" className="footer-logo" width="160" height="160" loading="lazy" />
+          <div>
           <p>Plataforma educativa de <b>ORION NOVA TECHNOLOGIES</b> · Innovamos · Desarrollamos · Conectamos</p>
           <p className="muted">© {new Date().getFullYear()} Orion Nova Technologies. Certificados verificables en línea.</p>
+          </div>
         </div>
       </footer>
     </>

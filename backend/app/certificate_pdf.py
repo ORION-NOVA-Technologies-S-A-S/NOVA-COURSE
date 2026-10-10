@@ -9,7 +9,11 @@ from reportlab.lib.colors import HexColor
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.pdfgen import canvas
 
+from pathlib import Path
+
 from .config import settings
+
+LOGO = str(Path(__file__).resolve().parent / "assets" / "logo-emblema.png")
 
 NAVY = HexColor("#0B1026")
 INDIGO = HexColor("#4F46E5")
@@ -40,39 +44,42 @@ def build_certificate(*, student: str, document_id: str | None, course: str, hou
     c.setLineWidth(0.8)
     c.roundRect(46, 46, w - 92, h - 92, 8, fill=0, stroke=1)
 
+    # Logo de Orion Nova Technologies
+    c.drawImage(LOGO, w / 2 - 34, h - 122, width=68, height=68, mask="auto")
+
     # Encabezado de la empresa
     c.setFillColor(INDIGO)
     c.setFont("Helvetica-Bold", 20)
-    c.drawCentredString(w / 2, h - 95, settings.company_name)
+    c.drawCentredString(w / 2, h - 140, settings.company_name)
     c.setFillColor(HexColor("#6B7280"))
     c.setFont("Helvetica", 10)
-    c.drawCentredString(w / 2, h - 112, settings.company_motto.upper() + "  ·  ORION NOVA ACADEMY")
+    c.drawCentredString(w / 2, h - 157, settings.company_motto.upper() + "  ·  NOVA COURSE")
 
     c.setFillColor(INK)
     c.setFont("Helvetica-Bold", 34)
-    c.drawCentredString(w / 2, h - 170, "CERTIFICADO DE APROBACIÓN")
+    c.drawCentredString(w / 2, h - 215, "CERTIFICADO DE APROBACIÓN")
 
     c.setFont("Helvetica", 13)
-    c.drawCentredString(w / 2, h - 205, "Orion Nova Technologies certifica que")
+    c.drawCentredString(w / 2, h - 250, "Orion Nova Technologies certifica que")
 
     c.setFillColor(NAVY)
     c.setFont("Helvetica-Bold", 30)
-    c.drawCentredString(w / 2, h - 248, student)
+    c.drawCentredString(w / 2, h - 293, student)
     if document_id:
         c.setFillColor(HexColor("#6B7280"))
         c.setFont("Helvetica", 11)
-        c.drawCentredString(w / 2, h - 268, f"Documento de identidad {document_id}")
+        c.drawCentredString(w / 2, h - 313, f"Documento de identidad {document_id}")
 
     c.setFillColor(INK)
     c.setFont("Helvetica", 13)
-    c.drawCentredString(w / 2, h - 298, "completó y aprobó satisfactoriamente el curso")
+    c.drawCentredString(w / 2, h - 343, "completó y aprobó satisfactoriamente el curso")
     c.setFillColor(INDIGO)
     c.setFont("Helvetica-Bold", 22)
-    c.drawCentredString(w / 2, h - 330, course)
+    c.drawCentredString(w / 2, h - 375, course)
     c.setFillColor(INK)
     c.setFont("Helvetica", 12)
     date_txt = f"{issued_at.day} de {MONTHS[issued_at.month - 1]} de {issued_at.year}"
-    c.drawCentredString(w / 2, h - 356, f"con una intensidad de {hours} horas · 5 módulos · 60 temas · expedido el {date_txt}")
+    c.drawCentredString(w / 2, h - 401, f"con una intensidad de {hours} horas · 5 módulos · 60 temas · expedido el {date_txt}")
 
     # Firma
     c.setStrokeColor(INK)
@@ -100,7 +107,8 @@ def build_certificate(*, student: str, document_id: str | None, course: str, hou
     c.setFont("Helvetica", 8)
     c.setFillColor(HexColor("#6B7280"))
     c.drawString(76, 91, "Verificación en línea:")
-    c.drawString(76, 80, verify_url[:70])
+    c.setFont("Helvetica", 6.5)
+    c.drawString(76, 80, verify_url[:100])
 
     c.showPage()
     c.save()
