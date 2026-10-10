@@ -87,6 +87,100 @@ const INTERESTS: Record<string, string[]> = {
   "escritura-creativa": ["escribir", "escritor", "novela", "cuentos", "poesia", "libro"],
   arquitectura: ["arquitectura", "arquitecto", "edificios", "planos", "construccion de casas"],
   publicidad: ["publicidad", "anuncios", "campanas", "marcas", "marketing", "creativo"],
+  // Datos
+  "ciencia-de-datos": ["datos", "ciencia de datos", "cientifico de datos", "data science", "pandas", "jupyter"],
+  estadistica: ["estadistica", "probabilidad", "encuestas", "promedio", "muestreo"],
+  "analisis-de-datos": ["datos", "analisis de datos", "analista de datos", "sql", "limpieza de datos"],
+  "aprendizaje-automatico": ["machine learning", "aprendizaje automatico", "modelos predictivos", "scikit"],
+  "mineria-de-datos": ["mineria de datos", "data mining", "patrones", "clustering"],
+  "inteligencia-de-negocios": ["inteligencia de negocios", "business intelligence", " bi ", "kpi", "indicadores"],
+  econometria: ["econometria", "regresion", "series de tiempo", "evaluacion de impacto"],
+  "bases-de-datos": ["base de datos", "bases de datos", "postgresql", "mysql", "mongodb", "sql"],
+  "analitica-predictiva": ["analitica predictiva", "predecir", "pronostico", "prediccion", "churn"],
+  bioestadistica: ["bioestadistica", "epidemiologia", "ensayos clinicos", "estadistica en salud"],
+  // Educación
+  pedagogia: ["pedagogia", "docente", "profesor", "maestro", "ensenar", "licenciatura"],
+  "educacion-infantil": ["educacion infantil", "primera infancia", "preescolar", "jardin", "ninos pequenos"],
+  "educacion-primaria": ["primaria", "maestra de primaria", "escuela", "lectoescritura"],
+  "educacion-secundaria": ["secundaria", "bachillerato", "colegio", "adolescentes"],
+  "educacion-especial": ["educacion especial", "discapacidad", "autismo", "braille", "sindrome de down"],
+  "educacion-inclusiva": ["inclusion", "educacion inclusiva", "diversidad", "piar", "dua"],
+  didactica: ["didactica", "estrategias de ensenanza", "planear clases", "secuencia didactica"],
+  psicopedagogia: ["psicopedagogia", "dificultades de aprendizaje", "dislexia", "tdah"],
+  "administracion-educativa": ["rector", "coordinador", "gestion escolar", "administracion educativa", "pei"],
+  "tecnologia-educativa": ["tecnologia educativa", "tic en el aula", "edtech", "gamificacion"],
+  "educacion-bilingue": ["bilingue", "bilinguismo", "ensenar ingles", "clil"],
+  "educacion-virtual": ["educacion virtual", "clases virtuales", "e-learning", "moodle", "cursos en linea"],
+  "orientacion-escolar": ["orientacion escolar", "orientador", "orientacion vocacional", "convivencia escolar"],
+  // Ingeniería
+  "ingenieria-de-software": ["ingenieria de software", "arquitectura de software", "requisitos", "uml"],
+  "ingenieria-informatica": ["ingenieria informatica", "algoritmos", "sistemas operativos", "computacion"],
+  "ingenieria-electronica": ["electronica", "circuitos", "transistores", "microcontroladores", "pcb"],
+  "ingenieria-electrica": ["ingenieria electrica", "electricista", "instalaciones electricas", "retie", "transformadores"],
+  "ingenieria-industrial": ["ingenieria industrial", "procesos", "produccion", "productividad", "lean"],
+  "ingenieria-civil": ["ingenieria civil", "construccion", "puentes", "carreteras", "estructuras", "obras"],
+  "ingenieria-mecanica": ["ingenieria mecanica", "maquinas", "motores", "termodinamica", "mecanico"],
+  "ingenieria-mecatronica": ["mecatronica", "plc", "automatizacion", "robots industriales"],
+  "ingenieria-ambiental": ["ingenieria ambiental", "aguas residuales", "residuos", "impacto ambiental"],
+  "ingenieria-quimica": ["ingenieria quimica", "procesos quimicos", "reactores", "refineria"],
+  "ingenieria-biomedica": ["biomedica", "equipos medicos", "protesis", "dispositivos medicos"],
+  "ingenieria-de-telecomunicaciones": ["telecomunicaciones", "antenas", "5g", "fibra optica", "satelites"],
+  "ingenieria-aeroespacial": ["aeroespacial", "aviones", "cohetes", "aviacion", "aeronautica", "drones"],
+  "ingenieria-de-minas": ["ingenieria de minas", "mineria", "minas", "minerales", "oro"],
+  "ingenieria-de-petroleos": ["petroleo", "petroleos", "hidrocarburos", "gas natural", "pozos"],
+  "ingenieria-agricola": ["ingenieria agricola", "agricultura", "riego", "campo", "cultivos", "tractores"],
+  // Negocios
+  "administracion-de-empresas": ["administracion de empresas", "administrador", "gerente", "empresa", "gerencia"],
+  contabilidad: ["contabilidad", "contador", "contable", "impuestos", "niif", "nomina"],
+  finanzas: ["finanzas", "inversiones", "bolsa", "acciones", "ahorro", "credito"],
+  mercadeo: ["mercadeo", "marketing", "ventas", "clientes", "redes sociales", "marca"],
+  "comercio-internacional": ["comercio internacional", "exportar", "importar", "aduanas", "incoterms"],
+  "negocios-internacionales": ["negocios internacionales", "internacionalizacion", "otros paises", "multinacional"],
+  emprendimiento: ["emprender", "emprendimiento", "mi negocio", "startup", "idea de negocio", "negocio propio"],
+  "gestion-de-proyectos": ["gestion de proyectos", "proyectos", "pmi", "cronograma", "scrum", "gerente de proyectos"],
+  "recursos-humanos": ["recursos humanos", "talento humano", "seleccion de personal", "reclutamiento", "nomina"],
+  logistica: ["logistica", "inventarios", "bodega", "transporte", "distribucion", "envios"],
+  "gestion-empresarial": ["pyme", "mi empresa", "pequena empresa", "gestion empresarial", "negocio familiar"],
+  "economia-empresarial": ["economia empresarial", "precios", "competencia", "microeconomia"],
+  "gestion-de-operaciones": ["operaciones", "gestion de operaciones", "calidad", "procesos productivos"],
+  "administracion-publica": ["administracion publica", "sector publico", "gobierno", "contratacion estatal", "funcionario"],
+  "gestion-de-la-innovacion": ["innovacion", "innovar", "design thinking", "creatividad", "patentes"],
+  // Salud
+  medicina: ["medicina", "medico", "doctor", "anatomia", "enfermedades"],
+  enfermeria: ["enfermeria", "enfermera", "enfermero", "cuidado de pacientes"],
+  odontologia: ["odontologia", "odontologo", "dientes", "salud oral", "dentista"],
+  farmacia: ["farmacia", "medicamentos", "drogueria", "farmaceutico", "regente"],
+  "nutricion-y-dietetica": ["nutricion", "dieta", "alimentacion", "nutricionista", "comer sano"],
+  fisioterapia: ["fisioterapia", "fisioterapeuta", "rehabilitacion", "lesiones"],
+  "terapia-ocupacional": ["terapia ocupacional", "terapeuta ocupacional", "actividades de la vida diaria"],
+  bacteriologia: ["bacteriologia", "laboratorio clinico", "examenes de sangre", "bacteriologo"],
+  "salud-publica": ["salud publica", "epidemiologia", "vacunacion", "pandemia", "prevencion"],
+  "psicologia-clinica": ["psicologia clinica", "psicoterapia", "terapia psicologica", "ansiedad", "depresion"],
+  optometria: ["optometria", "optometra", "vista", "gafas", "lentes", "ojos"],
+  fonoaudiologia: ["fonoaudiologia", "fonoaudiologo", "habla", "lenguaje", "audicion", "voz"],
+  // Deporte
+  "ciencias-del-deporte": ["ciencias del deporte", "deportes", "rendimiento deportivo", "deportista"],
+  "entrenamiento-deportivo": ["entrenamiento deportivo", "entrenador", "director tecnico", "equipo deportivo"],
+  "preparacion-fisica": ["preparacion fisica", "preparador fisico", "fuerza", "velocidad", "pliometria"],
+  "gestion-deportiva": ["gestion deportiva", "club deportivo", "eventos deportivos", "dirigente"],
+  "fisiologia-del-ejercicio": ["fisiologia del ejercicio", "vo2", "frecuencia cardiaca", "metabolismo"],
+  "biomecanica-deportiva": ["biomecanica", "tecnica deportiva", "movimiento", "analisis de video"],
+  recreacion: ["recreacion", "recreador", "juegos", "campamentos", "animacion", "tiempo libre"],
+  "entrenamiento-personal": ["entrenador personal", "personal trainer", "gimnasio", "clientes fitness"],
+  // Tecnología
+  "desarrollo-de-software": ["desarrollador", "full stack", "desarrollo web", "paginas web", "react", "fastapi"],
+  ciberseguridad: ["ciberseguridad", "seguridad informatica", "hackers", "hacking etico", "virus informatico"],
+  "redes-y-telecomunicaciones": ["redes", "cisco", "wifi", "internet", "router", "cableado"],
+  "internet-de-las-cosas": ["iot", "internet de las cosas", "domotica", "sensores", "casa inteligente"],
+  "computacion-forense": ["forense", "informatica forense", "evidencia digital", "peritaje", "investigacion digital"],
+  "administracion-de-sistemas": ["administrador de sistemas", "linux", "windows server", "servidores", "sysadmin"],
+  "desarrollo-de-aplicaciones-moviles": ["aplicaciones moviles", "apps", "android", "ios", "flutter", "celular"],
+  "realidad-virtual-y-aumentada": ["realidad virtual", "realidad aumentada", "metaverso", "unity", "vr", "gafas virtuales"],
+  devops: ["devops", "ci/cd", "docker", "kubernetes", "despliegue", "terraform"],
+  "automatizacion-industrial": ["automatizacion industrial", "plc", "scada", "fabrica", "neumatica"],
+  blockchain: ["blockchain", "bitcoin", "criptomonedas", "ethereum", "contratos inteligentes", "nft"],
+  "soporte-tecnico": ["soporte tecnico", "arreglar computadores", "mantenimiento de computadores", "mesa de ayuda", "tecnico"],
+  "sistemas-de-informacion": ["sistemas de informacion", "erp", "crm", "procesos de negocio", "transformacion digital"],
   "diseno-grafico": ["diseno", "grafico", "logo", "marca", "dibuj", "ilustra", "creativ", "photoshop", "illustrator", "redes sociales", "publicidad", "arte"],
   "programacion-de-software": ["program", "codigo", "software", "python", "javascript", "react", "app", "aplicacion", "pagina web", "desarroll", "backend", "frontend"],
   "ingenieria-de-sistemas": ["sistemas", "redes", "computador", "servidor", "base de datos", "bases de datos", "ingenieria", "informatica", "tecnologia", "soporte"],
@@ -110,14 +204,18 @@ async function courses(): Promise<CourseSummary[]> {
   return catalog;
 }
 
+// Palabras que comparten muchos cursos: no bastan para elegir uno (ahí decide la recomendación por intereses)
+const GENERIC_WORDS = new Set(["datos", "fundamentos", "tecnologia", "educacion", "ingenieria", "gestion", "administracion", "ciencias", "ciencia", "desarrollo", "sistemas", "entrenamiento", "analisis", "internacional", "internacionales"]);
+
 function findCourse(t: string, list: CourseSummary[]): CourseSummary | undefined {
   // Puntaje: nombre completo = 2; si no, la fracción de palabras del nombre que aparecen (Física gana a Educación Física)
   let best: CourseSummary | undefined;
   let bestScore = 0;
   for (const c of list) {
-    const title = norm(c.title);
+    // Sin paréntesis ni signos: "Medicina (Fundamentos)" → "medicina fundamentos" (evita expresiones regulares inválidas)
+    const title = norm(c.title).replace(/[^a-z0-9ñ ]+/g, " ").replace(/\s+/g, " ").trim();
     // "datos" es muy general (Big Data y Visualización): ahí decide la recomendación por intereses
-    const words = title.split(" ").filter((w) => w.length > 4 && w !== "datos");
+    const words = title.split(" ").filter((w) => w.length > 4 && !GENERIC_WORDS.has(w));
     const score = t.includes(` ${title} `) || t.includes(title)
       ? 2 + title.length / 100
       : words.filter((w) => new RegExp(`\\b${w}\\b`).test(t)).length / Math.max(words.length, 1);
@@ -306,7 +404,7 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   // Gratis
   if (has(t, "gratis", "gratuito", "free", "sin pagar", "sin costo")) {
     return {
-      text: "Con una cuenta gratis abres los módulos 1 al 5 de los 15 cursos: 60 temas por curso, sin tarjeta. Los módulos 6 al 10 y el certificado se desbloquean con un pago único.",
+      text: `Con una cuenta gratis abres los módulos 1 al 5 de los ${list.length} cursos: 60 temas por curso, sin tarjeta. Los módulos 6 al 10 y el certificado se desbloquean con un pago único.`,
       actions: user ? [STARTER_ACTIONS[0]] : [{ label: "Crear cuenta gratis", to: "/registro" }, STARTER_ACTIONS[0]],
     };
   }
@@ -363,7 +461,7 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   // Lista de cursos
   if (has(t, "cursos", "catalogo", "que tienen", "que ofrecen", "carreras", "programas")) {
     return {
-      text: `Tenemos ${list.length} cursos: ${list.map((c) => c.title).join(", ")}. Cada uno con 10 módulos y 120 temas.`,
+      text: `Tenemos ${list.length} cursos en ${new Set(list.map((c) => c.category)).size} áreas: ${Array.from(new Set(list.map((c) => c.category))).sort().join(", ")}. Cada uno con 10 módulos y 120 temas. Cuéntame qué te gusta y te recomiendo uno.`,
       actions: [{ label: "Ver todos los cursos", to: "/cursos" }, STARTER_ACTIONS[0]],
     };
   }

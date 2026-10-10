@@ -3,6 +3,7 @@
  * Trazo blanco sobre la portada de color del curso; tamaño libre (viewBox 120×120).
  */
 import type { ReactNode } from "react";
+import { ART_MAS } from "./courseArtMas";
 
 const S = { fill: "none", stroke: "currentColor", strokeWidth: 3.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
 const soft = "rgba(255,255,255,.22)";
@@ -444,7 +445,7 @@ const SIGN_ART = (
 );
 
 export function CourseArt({ slug, lang, className = "" }: { slug: string; lang?: string | null; className?: string }) {
-  const art = lang === "lsc" ? SIGN_ART : lang ? LANGUAGE_ART : ART[slug];
+  const art = lang === "lsc" ? SIGN_ART : lang ? LANGUAGE_ART : ART[slug] ?? ART_MAS[slug];
   if (!art) return null;
   return (
     <svg className={`course-art ${className}`} viewBox="0 0 120 120" aria-hidden="true" focusable="false">

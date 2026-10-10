@@ -70,7 +70,8 @@ export function NovaChat() {
         avatarState.set("think", false);
         avatarState.pulse("happy", 1200);
         novaSays(r);
-      } catch {
+      } catch (err) {
+        console.error("NOVA:", err);
         avatarState.set("think", false);
         novaSays({ text: "Tuve un problema para consultar la información. Intenta de nuevo en un momento." });
       } finally {

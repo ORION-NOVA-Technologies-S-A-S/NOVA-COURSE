@@ -13,6 +13,7 @@ export function coverText(c: { title: string; lang?: string | null }) {
 
 export function initials(title: string) {
   return title
+    .replace(/\s*\([^)]*\)/g, "") // "Medicina (Fundamentos)" → "Medicina"
     .split(" ")
     .filter((w) => w.length > 3)
     .slice(0, 2)
