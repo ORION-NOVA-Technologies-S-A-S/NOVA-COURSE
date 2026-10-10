@@ -1,11 +1,13 @@
 """Catálogo oficial de cursos de Orion Nova Academy.
 
-Cada curso tiene 5 módulos y cada módulo 12 temas (60 temas por curso).
-Los módulos 1, 2 y 3 son gratuitos; los módulos 4 y 5 y el certificado son de pago.
+Cada curso tiene 10 módulos y cada módulo 12 temas (120 temas por curso).
+Los módulos 1 a 5 (nivel básico) son gratuitos; los módulos 6 a 10 (avanzado), el certificado y sus 120 horas son de pago.
+Los módulos 6 a 10 están en catalog_avanzado.py y las fuentes de cada curso en fuentes.py.
 Edita este archivo y vuelve a correr `python -m app.seed` para actualizar la base de datos.
 """
 
-FREE_MODULES = 3
+FREE_MODULES = 5
+CERTIFICATE_HOURS = 120
 DEFAULT_PRICE_COP = 89_900
 
 COURSES = [
@@ -104,7 +106,7 @@ COURSES = [
             ("Electrónica básica", ["Voltaje, corriente y resistencia", "Ley de Ohm", "Componentes pasivos", "Diodos y LEDs", "Transistores", "Protoboard", "Multímetro", "Fuentes de alimentación", "Circuitos integrados", "Soldadura", "Simulación de circuitos", "Proyecto: semáforo electrónico"]),
             ("Microcontroladores", ["Qué es un microcontrolador", "Arduino", "Entradas y salidas digitales", "Entradas analógicas", "PWM", "Comunicación serial", "ESP32", "Raspberry Pi", "Programación en C++", "MicroPython", "Interrupciones", "Proyecto: estación de monitoreo"]),
             ("Sensores y actuadores", ["Sensores de distancia", "Sensores de luz y color", "Acelerómetro y giroscopio", "Encoders", "Motores DC", "Servomotores", "Motores paso a paso", "Puentes H", "Control PID", "Visión con cámara", "Comunicación inalámbrica", "Proyecto: seguidor de línea"]),
-            ("Robótica avanzada", ["Cinemática directa", "Cinemática inversa", "Brazos robóticos", "Robots móviles", "Navegación autónoma", "SLAM", "ROS 2", "Simulación con Gazebo", "IA en robótica", "Interacción humano-robot", "Robots en restaurantes y hoteles", "Proyecto final: robot autónomo"]),
+            ("Cinemática y robots autónomos", ["Cinemática directa", "Cinemática inversa", "Brazos robóticos", "Robots móviles", "Navegación autónoma", "SLAM", "ROS 2", "Simulación con Gazebo", "IA en robótica", "Interacción humano-robot", "Robots en restaurantes y hoteles", "Proyecto final: robot autónomo"]),
         ],
     },
     {
@@ -174,7 +176,7 @@ COURSES = [
             ("Color, diseño y narrativa", ["Uso del color", "Paletas accesibles", "Tipografía en gráficos", "Anotaciones", "Reducción de ruido", "Storytelling con datos", "Estructura de una historia", "Audiencia y contexto", "Datos y ética", "Visualización engañosa", "Presentaciones efectivas", "Taller: historia con datos"]),
             ("Herramientas", ["Hojas de cálculo", "Python con Matplotlib", "Seaborn", "Plotly", "Power BI", "Tableau Public", "Looker Studio", "Limpieza de datos", "Pandas para visualizar", "Exportación y publicación", "Comparación de herramientas", "Taller: primer dashboard"]),
             ("Dashboards", ["Qué es un dashboard", "KPIs y métricas", "Diseño de layout", "Filtros e interactividad", "Modelado de datos", "DAX básico", "Actualización automática", "Dashboards operativos", "Dashboards estratégicos", "Rendimiento", "Pruebas con usuarios", "Taller: dashboard de ventas"]),
-            ("Visualización avanzada", ["Mapas y datos geográficos", "Redes y grafos", "Visualización web con D3", "Gráficos en React", "Visualización en tiempo real", "Big data visual", "Visualización científica", "Infografías", "Accesibilidad", "Portafolio de visualizaciones", "Tendencias", "Proyecto final de visualización"]),
+            ("Mapas, redes y visualización web", ["Mapas y datos geográficos", "Redes y grafos", "Visualización web con D3", "Gráficos en React", "Visualización en tiempo real", "Big data visual", "Visualización científica", "Infografías", "Accesibilidad", "Portafolio de visualizaciones", "Tendencias", "Proyecto final de visualización"]),
         ],
     },
     {
@@ -188,7 +190,7 @@ COURSES = [
             ("Almacenamiento distribuido", ["Sistemas distribuidos", "Teorema CAP", "Hadoop y HDFS", "MapReduce", "Bases NoSQL", "MongoDB", "Cassandra", "Bases clave-valor", "Formatos Parquet y Avro", "Particionamiento", "Almacenamiento en la nube", "Taller: modelado NoSQL"]),
             ("Procesamiento con Spark", ["Introducción a Apache Spark", "RDDs", "DataFrames", "Spark SQL", "PySpark", "Transformaciones y acciones", "Optimización", "Spark Streaming", "MLlib", "Databricks", "Monitoreo de jobs", "Taller: análisis de logs"]),
             ("Ingeniería de datos", ["Pipelines ETL y ELT", "Ingesta de datos", "Apache Kafka", "Orquestación con Airflow", "dbt", "Calidad de datos", "Gobierno de datos", "Catálogo y linaje", "Seguridad de datos", "Datos en tiempo real", "Costos y escalabilidad", "Taller: pipeline completo"]),
-            ("Analítica avanzada", ["Analítica descriptiva", "Analítica predictiva", "Machine learning a escala", "Procesamiento de texto", "Análisis de redes sociales", "Sistemas de recomendación", "IoT y sensores", "Privacidad y ley de datos", "Big Data en Colombia", "Cultura data-driven", "Carrera en datos", "Proyecto final de Big Data"]),
+            ("Analítica de datos", ["Analítica descriptiva", "Analítica predictiva", "Machine learning a escala", "Procesamiento de texto", "Análisis de redes sociales", "Sistemas de recomendación", "IoT y sensores", "Privacidad y ley de datos", "Big Data en Colombia", "Cultura data-driven", "Carrera en datos", "Proyecto final de Big Data"]),
         ],
     },
     {
@@ -221,6 +223,23 @@ COURSES = [
     },
 ]
 
+
+
+def _merge() -> None:
+    """Une los módulos avanzados y cierra el nivel básico con un proyecto integrador."""
+    from .catalog_avanzado import ADVANCED_MODULES
+    from .fuentes import SOURCES
+
+    for c in COURSES:
+        title5, topics5 = c["modules"][4]
+        topics5 = [t.replace("Proyecto final", "Proyecto integrador").replace("Reto final de 30 días", "Reto de 30 días") for t in topics5]
+        c["modules"][4] = (title5, topics5)
+        if len(c["modules"]) == 5:
+            c["modules"].extend(ADVANCED_MODULES[c["slug"]])
+        c["sources"] = SOURCES.get(c["slug"], [])
+
+
+_merge()
 
 def lesson_content(course_title: str, module_title: str, topic_title: str, topic_number: int) -> str:
     """Plantilla base de cada lección (Markdown). Reemplázala por el contenido real desde el panel de administración."""

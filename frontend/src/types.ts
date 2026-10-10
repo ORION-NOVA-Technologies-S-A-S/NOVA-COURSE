@@ -34,6 +34,13 @@ export interface ModuleItem {
   topics: TopicItem[];
 }
 
+export interface CourseSource {
+  title: string;
+  publisher: string;
+  url: string;
+  use: string;
+}
+
 export interface CourseDetail {
   slug: string;
   title: string;
@@ -45,6 +52,7 @@ export interface CourseDetail {
   plan: "free" | "premium" | null;
   progress: { completed: number; total: number; percent: number };
   certificate_code: string | null;
+  sources: CourseSource[];
   modules: ModuleItem[];
 }
 

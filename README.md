@@ -2,8 +2,9 @@
 
 CURSOS DE NOVA GRATUITO Y CON SUSCRIPCIÓN
 
-Plataforma de cursos de **ORION NOVA TECHNOLOGIES**: 15 cursos, 5 módulos por curso y 12 temas por módulo (900 temas).
-Los módulos 1, 2 y 3 son gratis. Los módulos 4 y 5 y el certificado se pagan.
+Plataforma de cursos de **ORION NOVA TECHNOLOGIES**: 15 cursos, 10 módulos por curso y 12 temas por módulo (1.800 temas).
+Los módulos 1 al 5 son gratis. Los módulos 6 al 10 y el certificado (120 horas) se pagan.
+Cada curso tiene una sección de **Fuentes y referencias** con documentos oficiales verificados (`backend/app/data/fuentes.py`).
 
 | Parte | Tecnología |
 |---|---|
@@ -12,7 +13,7 @@ Los módulos 1, 2 y 3 son gratis. Los módulos 4 y 5 y el certificado se pagan.
 | Base de datos | PostgreSQL en Supabase (proyecto **NOVA COURSE**) |
 
 Supabase guarda las cuentas, los cursos, las lecciones y el avance. Las reglas de seguridad están dentro de la base de datos:
-nadie ve los módulos 4 y 5 sin pagar, y solo el servidor Python puede activar un curso pagado.
+nadie ve los módulos 6 al 10 sin pagar, y solo el servidor Python puede activar un curso pagado.
 
 ---
 
@@ -21,7 +22,12 @@ nadie ve los módulos 4 y 5 sin pagar, y solo el servidor Python puede activar u
 En Supabase, entra al proyecto **NOVA COURSE** y ve a **SQL Editor → New query**.
 
 1. Abre `supabase/01_esquema.sql`, copia todo, pégalo y pulsa **Run**.
-2. Abre `supabase/02_cursos.sql`, copia todo, pégalo y pulsa **Run**. Al final debe mostrar `15 | 75 | 900 | 900`.
+2. Abre `supabase/02_cursos.sql`, copia todo, pégalo y pulsa **Run**. Al final debe mostrar `15 | 150 | 1800 | 1800 | 63`.
+
+## Actualizar una base ya creada
+
+Si ya habías cargado la versión de 5 módulos, vuelve a ejecutar **01_esquema.sql** y luego **02_cursos.sql**.
+No se pierden usuarios, avances, pagos ni certificados.
 
 ## Paso 2. Configurar el registro de usuarios
 
@@ -94,14 +100,14 @@ Mientras no haya llaves de Wompi, el botón de pago abre un **modo de prueba** q
 
 ## Cómo funcionan las reglas
 
-- **Módulos 1-3**: cualquier persona registrada ve el contenido.
-- **Módulos 4-5**: solo quien tiene el plan `premium` en ese curso. Lo activa únicamente el servidor tras confirmar el pago con Wompi.
-- **Certificado**: se emite al tener el curso pagado y los 60 temas marcados. Incluye código único y QR.
+- **Módulos 1-5**: cualquier persona registrada ve el contenido.
+- **Módulos 6-10**: solo quien tiene el plan `premium` en ese curso. Lo activa únicamente el servidor tras confirmar el pago con Wompi.
+- **Certificado**: se emite al tener el curso pagado y los 120 temas marcados (120 horas). Incluye código único y QR.
   Cualquiera puede verificarlo en `/verificar/CÓDIGO`.
 
 ## Agregar o cambiar cursos
 
-Edita `backend/app/data/catalog.py` (cada curso: 5 módulos de 12 temas), ejecuta
+Edita `backend/app/data/catalog.py` (módulos 1-5), `catalog_avanzado.py` (módulos 6-10) o `fuentes.py`, ejecuta
 `python scripts/generar_sql_cursos.py` y vuelve a correr `supabase/02_cursos.sql`.
 Eso no borra el contenido que ya escribiste desde el panel de administración.
 

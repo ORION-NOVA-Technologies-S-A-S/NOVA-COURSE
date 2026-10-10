@@ -79,7 +79,7 @@ def build_certificate(*, student: str, document_id: str | None, course: str, hou
     c.setFillColor(INK)
     c.setFont("Helvetica", 12)
     date_txt = f"{issued_at.day} de {MONTHS[issued_at.month - 1]} de {issued_at.year}"
-    c.drawCentredString(w / 2, h - 401, f"con una intensidad de {hours} horas · 5 módulos · 60 temas · expedido el {date_txt}")
+    c.drawCentredString(w / 2, h - 401, f"con una intensidad de {hours} horas · expedido el {date_txt}")
 
     # Firma
     c.setStrokeColor(INK)

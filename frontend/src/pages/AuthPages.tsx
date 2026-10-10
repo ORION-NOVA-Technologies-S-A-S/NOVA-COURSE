@@ -98,7 +98,7 @@ export function RegisterPage() {
     <section className="wrap section auth">
       <form className="card form" onSubmit={submit}>
         <h1>Crea tu cuenta gratis</h1>
-        <p className="muted">Accede a los módulos 1, 2 y 3 de todos los cursos.</p>
+        <p className="muted">Accede a los módulos 1 al 5 de todos los cursos.</p>
         <label>Nombre completo (así saldrá en tu certificado)<input id="reg-name" name="full_name" minLength={3} required /></label>
         <label>Documento de identidad (opcional)<input id="reg-doc" name="document_id" inputMode="numeric" /></label>
         <label>Correo<input id="reg-email" name="email" type="email" autoComplete="email" required /></label>

@@ -1,9 +1,9 @@
 /** Lecturas y escrituras en Supabase. La seguridad la aplica la base de datos (políticas RLS). */
 import { ApiError } from "./api";
 import { supabase } from "./supabase";
-import type { CourseDetail, CourseSummary, Lesson, ModuleItem, MyCourse } from "./types";
+import type { CourseDetail, CourseSource, CourseSummary, Lesson, ModuleItem, MyCourse } from "./types";
 
-type CourseRow = Omit<CourseSummary, "modules" | "topics"> & { id: number };
+type CourseRow = Omit<CourseSummary, "modules" | "topics"> & { id: number; sources?: CourseSource[] };
 type ModuleRow = { id: number; position: number; title: string; topics: { id: number; position: number; title: string }[] };
 
 function check<T>(res: { data: T | null; error: { message: string } | null }): T {
@@ -19,7 +19,7 @@ export async function listCourses(): Promise<CourseSummary[]> {
       .eq("is_published", true)
       .order("title"),
   ) as Omit<CourseSummary, "modules" | "topics">[];
-  return rows.map((r) => ({ ...r, modules: 5, topics: 60 }));
+  return rows.map((r) => ({ ...r, modules: 10, topics: 120 }));
 }
 
 async function courseStructure(courseId: number): Promise<ModuleRow[]> {
@@ -35,7 +35,7 @@ export async function getCourse(slug: string, userId: string | null): Promise<Co
   const course = check(
     await supabase
       .from("courses")
-      .select("id, slug, title, category, color, summary, price_cop, free_modules")
+      .select("id, slug, title, category, color, summary, price_cop, free_modules, sources")
       .eq("slug", slug)
       .maybeSingle(),
   ) as CourseRow | null;
@@ -78,6 +78,7 @@ export async function getCourse(slug: string, userId: string | null): Promise<Co
     plan,
     progress: { completed, total, percent: total ? Math.round((100 * completed) / total) : 0 },
     certificate_code: certificate,
+    sources: Array.isArray(course.sources) ? course.sources : [],
     modules,
   };
 }

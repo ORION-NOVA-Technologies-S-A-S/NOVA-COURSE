@@ -12,6 +12,7 @@ export interface NovaAction {
   to?: string; // ir a una página
   ask?: string; // preguntarle algo a NOVA
   read?: boolean; // leer la lección actual en voz alta
+  href?: string; // abrir un sitio externo (fuentes)
 }
 
 export interface NovaReply {
@@ -146,6 +147,24 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
     return { text: `Te leo «${lesson.title}». Puedes detenerme con el botón del parlante.`, say: lesson.content };
   }
 
+  // Fuentes y referencias
+  if (has(t, "fuente", "referencia", "bibliografia", "de donde", "donde sacaron", "donde salio", "respaldo", "documentos oficiales")) {
+    if (!course)
+      return {
+        text: "Cada curso tiene su sección «Fuentes y referencias» con documentos oficiales verificados: leyes de Colombia, guías del Ministerio de Educación, la OMS, y la documentación oficial de Python, React, AWS y otras. ¿De qué curso quieres ver las fuentes?",
+        actions: list.slice(0, 4).map((c) => ({ label: `Fuentes de ${c.title}`, ask: `Fuentes de ${c.title}` })),
+      };
+    const detail = await getCourse(course.slug, null).catch(() => null);
+    const sources = detail?.sources ?? [];
+    return {
+      text: sources.length
+        ? `Fuentes de ${course.title}:\n${sources.map((s) => `• ${s.title} (${s.publisher})`).join("\n")}`
+        : `Todavía no hay fuentes registradas para ${course.title}.`,
+      say: `${course.title} se apoya en ${sources.length} fuentes oficiales. Te las dejo en pantalla para que las abras.`,
+      actions: [...sources.slice(0, 3).map((s) => ({ label: s.title.length > 38 ? s.title.slice(0, 36) + "…" : s.title, href: s.url })), goCourse(course)],
+    };
+  }
+
   // Avance del estudiante
   if (has(t, "progreso", "como voy", "mi avance", "mis cursos", "cuanto me falta", "continuar", "seguir estudiando")) {
     if (!user) {
@@ -174,7 +193,7 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   // Formas de pago
   if (has(t, "pse", "nequi", "tarjeta", "wompi", "bancolombia", "daviplata", "como pago", "como se paga", "medio de pago", "metodo de pago", "forma de pago")) {
     return {
-      text: "El pago es único por curso y se hace con Wompi de Bancolombia: PSE, Nequi, Bancolombia o tarjeta. En cuanto el pago se aprueba, se abren los módulos 4 y 5 y queda habilitado tu certificado.",
+      text: "El pago es único por curso y se hace con Wompi de Bancolombia: PSE, Nequi, Bancolombia o tarjeta. En cuanto el pago se aprueba, se abren los módulos 6 al 10 y queda habilitado tu certificado.",
       actions: course ? [goCourse(course)] : [{ label: "Ver cursos", to: "/cursos" }],
     };
   }
@@ -183,15 +202,15 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   if (has(t, "precio", "cuesta", "cuanto vale", "valor", "costo", "cuanto cobran", "cuanto es", "pagar")) {
     if (course)
       return {
-        text: `${course.title}: los módulos 1, 2 y 3 son gratis. El curso completo, con los módulos 4 y 5 y el certificado, cuesta ${formatCOP(course.price_cop)} en un solo pago.`,
+        text: `${course.title}: los módulos 1 al 5 son gratis. El curso completo, con los módulos 6 al 10 y el certificado, cuesta ${formatCOP(course.price_cop)} en un solo pago.`,
         actions: [goCourse(course)],
       };
     const prices = [...new Set(list.map((c) => c.price_cop))];
     return {
       text:
         prices.length === 1
-          ? `Cada curso tiene los módulos 1, 2 y 3 gratis. El curso completo con certificado cuesta ${formatCOP(prices[0])} en un solo pago, sin mensualidades.`
-          : "Cada curso tiene los módulos 1, 2 y 3 gratis. El precio del curso completo con certificado aparece en la página de cada curso.",
+          ? `Cada curso tiene los módulos 1 al 5 gratis. El curso completo con certificado cuesta ${formatCOP(prices[0])} en un solo pago, sin mensualidades.`
+          : "Cada curso tiene los módulos 1 al 5 gratis. El precio del curso completo con certificado aparece en la página de cada curso.",
       actions: [{ label: "¿Cómo pago?", ask: "¿Cómo pago?" }, { label: "Ver cursos", to: "/cursos" }],
     };
   }
@@ -199,7 +218,7 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   // Certificado
   if (has(t, "certificado", "certifica", "diploma", "titulo", "aval")) {
     return {
-      text: "El certificado lo expide ORION NOVA TECHNOLOGIES. Para obtenerlo: desbloquea el curso completo y marca como vistos los 60 temas. Después pulsa «Obtener certificado» en la página del curso. Sale en PDF con tu nombre, 60 horas, un código único y un QR para que cualquier empresa lo verifique.",
+      text: "El certificado lo expide ORION NOVA TECHNOLOGIES. Para obtenerlo: desbloquea el curso completo y marca como vistos los 120 temas. Después pulsa «Obtener certificado» en la página del curso. Sale en PDF con tu nombre, 120 horas, un código único y un QR para que cualquier empresa lo verifique.",
       actions: [{ label: "Verificar un certificado", to: "/verificar" }, ...(course ? [goCourse(course)] : [])],
     };
   }
@@ -207,7 +226,7 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   // Gratis
   if (has(t, "gratis", "gratuito", "free", "sin pagar", "sin costo")) {
     return {
-      text: "Con una cuenta gratis abres los módulos 1, 2 y 3 de los 15 cursos: 36 temas por curso, sin tarjeta. Los módulos 4 y 5 y el certificado se desbloquean con un pago único.",
+      text: "Con una cuenta gratis abres los módulos 1 al 5 de los 15 cursos: 60 temas por curso, sin tarjeta. Los módulos 6 al 10 y el certificado se desbloquean con un pago único.",
       actions: user ? [STARTER_ACTIONS[0]] : [{ label: "Crear cuenta gratis", to: "/registro" }, STARTER_ACTIONS[0]],
     };
   }
@@ -234,8 +253,8 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
     const detail = await getCourse(course.slug, null).catch(() => null);
     const modules = detail?.modules.map((m) => `${m.position}. ${m.title}${m.is_free ? " (gratis)" : ""}`).join("\n") ?? "";
     return {
-      text: `${course.title}: ${course.summary}\nTiene 5 módulos y 60 temas:\n${modules}\nEl curso completo con certificado cuesta ${formatCOP(course.price_cop)}.`,
-      say: `${course.title}. ${course.summary} Tiene 5 módulos y 60 temas. Los tres primeros módulos son gratis.`,
+      text: `${course.title}: ${course.summary}\nTiene 10 módulos y 120 temas:\n${modules}\nEl curso completo con certificado cuesta ${formatCOP(course.price_cop)}.`,
+      say: `${course.title}. ${course.summary} Tiene 10 módulos y 120 temas. Los cinco primeros módulos son gratis.`,
       actions: [goCourse(course), { label: "¿Qué es gratis?", ask: "¿Qué es gratis?" }],
     };
   }
@@ -245,7 +264,7 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   if (recs.length) {
     const names = recs.map((c) => c.title);
     return {
-      text: `Por lo que me cuentas, te recomiendo: ${names.join(", ")}. Puedes empezar gratis con los módulos 1 a 3 y decidir después.`,
+      text: `Por lo que me cuentas, te recomiendo: ${names.join(", ")}. Puedes empezar gratis con los módulos 1 al 5 y decidir después.`,
       actions: recs.map(goCourse),
     };
   }
@@ -264,7 +283,7 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
   // Lista de cursos
   if (has(t, "cursos", "catalogo", "que tienen", "que ofrecen", "carreras", "programas")) {
     return {
-      text: `Tenemos ${list.length} cursos: ${list.map((c) => c.title).join(", ")}. Cada uno con 5 módulos y 60 temas.`,
+      text: `Tenemos ${list.length} cursos: ${list.map((c) => c.title).join(", ")}. Cada uno con 10 módulos y 120 temas.`,
       actions: [{ label: "Ver todos los cursos", to: "/cursos" }, STARTER_ACTIONS[0]],
     };
   }

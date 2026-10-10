@@ -3,6 +3,7 @@
 Uso:  python scripts/generar_sql_cursos.py
 Edita catalog.py para agregar o cambiar cursos y vuelve a generar el archivo.
 """
+import json
 import sys
 from pathlib import Path
 
@@ -11,28 +12,33 @@ sys.path.insert(0, str(ROOT / "backend"))
 from app.data.catalog import COURSES, DEFAULT_PRICE_COP, FREE_MODULES  # noqa: E402
 
 
+def sources_json(c) -> str:
+    return json.dumps([{"title": t, "publisher": p, "url": u, "use": w} for t, p, u, w in c["sources"]], ensure_ascii=False)
+
+
 def q(v: str) -> str:
     return "'" + v.replace("'", "''") + "'"
 
 
 lines = [
     "-- =====================================================================",
-    "-- ORION NOVA ACADEMY · 15 cursos · 5 módulos · 12 temas (900 temas)",
+    "-- NOVA COURSE · 15 cursos · 10 módulos · 12 temas (1.800 temas) · módulos 1 a 5 gratis",
     "-- Pega este archivo en Supabase > SQL Editor y pulsa \"Run\" (después de 01_esquema.sql).",
     "-- No borra ni sobrescribe el contenido que ya hayas editado.",
     "-- Archivo generado por scripts/generar_sql_cursos.py",
     "-- =====================================================================",
     "begin;",
     "",
-    "insert into public.courses (slug, title, category, color, summary, price_cop, free_modules) values",
+    "insert into public.courses (slug, title, category, color, summary, price_cop, free_modules, sources) values",
 ]
 rows = []
 for c in COURSES:
     rows.append(f"  ({q(c['slug'])}, {q(c['title'])}, {q(c['category'])}, {q(c['color'])}, {q(c['summary'])}, "
-                f"{c.get('price_cop', DEFAULT_PRICE_COP)}, {FREE_MODULES})")
+                f"{c.get('price_cop', DEFAULT_PRICE_COP)}, {FREE_MODULES}, {q(sources_json(c))}::jsonb)")
 lines.append(",\n".join(rows))
 lines.append("on conflict (slug) do update set title = excluded.title, category = excluded.category,\n"
-             "  color = excluded.color, summary = excluded.summary;")
+             "  color = excluded.color, summary = excluded.summary, free_modules = excluded.free_modules,\n"
+             "  sources = excluded.sources;")
 lines.append("")
 lines.append("insert into public.modules (course_id, position, title)")
 lines.append("select c.id, v.pos, v.title from (values")
@@ -89,11 +95,12 @@ on conflict (topic_id) do nothing;
 
 commit;
 
--- Comprobación: debe mostrar 15 | 75 | 900 | 900
+-- Comprobación: debe mostrar 15 | 150 | 1800 | 1800 | 63
 select (select count(*) from public.courses) as cursos,
        (select count(*) from public.modules) as modulos,
        (select count(*) from public.topics) as temas,
-       (select count(*) from public.topic_contents) as contenidos;""")
+       (select count(*) from public.topic_contents) as contenidos,
+       (select sum(jsonb_array_length(sources)) from public.courses) as fuentes;""")
 out = ROOT / "supabase" / "02_cursos.sql"
 out.write_text("\n".join(lines) + "\n", encoding="utf-8")
 print(f"Generado {out} ({out.stat().st_size // 1024} KB)")

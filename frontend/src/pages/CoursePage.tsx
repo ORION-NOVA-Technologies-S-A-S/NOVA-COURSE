@@ -75,7 +75,7 @@ export function CoursePage() {
             <span className="chip">{course.category}</span>
             <h1>{course.title}</h1>
             <p className="lead">{course.summary}</p>
-            <p className="muted">5 módulos · 60 temas · 60 horas · Certificado Orion Nova Technologies</p>
+            <p className="muted">{course.modules.length} módulos · {course.progress.total} temas · {course.progress.total} horas · Certificado Orion Nova Technologies</p>
           </div>
           <div className="card buy-box">
             <span className="course-mono big">{initials(course.title)}</span>
@@ -106,7 +106,7 @@ export function CoursePage() {
             <button className="btn ghost block" onClick={() => openNova(`Cuéntame del curso ${course.title}`)}>
               Pregúntale a NOVA por este curso
             </button>
-            <p className="fine">Pago único con PSE, Nequi, Bancolombia o tarjeta (Wompi). Incluye módulos 4 y 5 y certificado.</p>
+            <p className="fine">Pago único con PSE, Nequi, Bancolombia o tarjeta (Wompi). Incluye los módulos {course.free_modules + 1} al {course.modules.length} y el certificado.</p>
             {msg && <p className="error">{msg}</p>}
           </div>
         </div>
@@ -147,6 +147,23 @@ export function CoursePage() {
           })}
         </div>
       </section>
+
+      {course.sources.length > 0 && (
+        <section className="wrap section sources" aria-labelledby="fuentes">
+          <h2 id="fuentes">Fuentes y referencias</h2>
+          <p className="muted">Documentos oficiales y materiales de consulta en los que se apoya este curso. Abren en una pestaña nueva.</p>
+          <ul className="source-list">
+            {course.sources.map((s) => (
+              <li key={s.url} className="card source">
+                <a href={s.url} target="_blank" rel="noreferrer">{s.title}</a>
+                <span className="muted">{s.publisher}</span>
+                <small>{s.use}</small>
+              </li>
+            ))}
+          </ul>
+          <p className="fine">Enlaces verificados en octubre de 2026. El temario fue diseñado por Orion Nova Technologies tomando estas fuentes como referencia.</p>
+        </section>
+      )}
     </>
   );
 }

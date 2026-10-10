@@ -1,6 +1,7 @@
 -- =====================================================================
 -- ORION NOVA ACADEMY · Esquema para Supabase (PostgreSQL)
 -- Pega este archivo completo en Supabase > SQL Editor y pulsa "Run".
+-- Versión 2: 10 módulos por curso (1 a 5 gratis, 6 a 10 de pago) y fuentes por curso.
 -- Después ejecuta 02_cursos.sql para cargar los 15 cursos y 900 temas.
 -- Se puede ejecutar más de una vez sin dañar datos.
 -- =====================================================================
@@ -40,14 +41,15 @@ create table if not exists public.courses (
   color        text not null default '#4F6BED',
   summary      text not null,
   price_cop    integer not null check (price_cop >= 0),
-  free_modules smallint not null default 3,
+  free_modules smallint not null default 5,
+  sources      jsonb not null default '[]'::jsonb,
   is_published boolean not null default true
 );
 
 create table if not exists public.modules (
   id        serial primary key,
   course_id integer not null references public.courses (id) on delete cascade,
-  position  smallint not null check (position between 1 and 5),
+  position  smallint not null,
   title     text not null,
   unique (course_id, position)
 );
@@ -61,7 +63,7 @@ create table if not exists public.topics (
   unique (module_id, position)
 );
 
--- Contenido de los temas: protegido (gratis módulos 1-3, pago módulos 4-5)
+-- Contenido de los temas: protegido (gratis módulos 1-5, pago módulos 6-10)
 create table if not exists public.topic_contents (
   topic_id  integer primary key references public.topics (id) on delete cascade,
   content   text not null,
@@ -107,10 +109,17 @@ create table if not exists public.certificates (
   course_id    integer not null references public.courses (id) on delete cascade,
   student_name text not null,
   document_id  text,
-  hours        smallint not null default 60,
+  hours        smallint not null default 120,
   issued_at    timestamptz not null default now(),
   unique (user_id, course_id)
 );
+
+-- ---------- Actualización a 10 módulos (sirve para bases creadas con la versión anterior) ----------
+alter table public.courses add column if not exists sources jsonb not null default '[]'::jsonb;
+alter table public.courses alter column free_modules set default 5;
+alter table public.certificates alter column hours set default 120;
+alter table public.modules drop constraint if exists modules_position_check;
+alter table public.modules add constraint modules_position_check check (position between 1 and 10);
 
 create index if not exists idx_modules_course on public.modules (course_id);
 create index if not exists idx_topics_module on public.topics (module_id);
@@ -123,7 +132,7 @@ returns boolean language sql stable security definer set search_path = public as
   select exists (select 1 from public.profiles where id = auth.uid() and role = 'admin');
 $$;
 
--- ¿Puede el usuario actual ver este tema? Módulos 1-3: cualquier usuario registrado. 4-5: plan premium.
+-- ¿Puede el usuario actual ver este tema? Módulos 1-5: cualquier usuario registrado. 6-10: plan premium.
 create or replace function public.can_access_topic(p_topic_id integer)
 returns boolean language sql stable security definer set search_path = public as $$
   select auth.uid() is not null and exists (
@@ -251,7 +260,7 @@ begin
 
   select plan into v_plan from public.enrollments where user_id = v_uid and course_id = v_course;
   if coalesce(v_plan, '') <> 'premium' then
-    raise exception 'El certificado requiere el curso completo (módulos 4 y 5)';
+    raise exception 'El certificado requiere el curso completo (módulos 6 a 10)';
   end if;
 
   select count(*) into v_total from public.topics t join public.modules m on m.id = t.module_id
@@ -269,8 +278,10 @@ begin
     exit when not exists (select 1 from public.certificates where code = v_code);
   end loop;
 
-  insert into public.certificates (code, user_id, course_id, student_name, document_id)
-  select v_code, v_uid, v_course, p.full_name, p.document_id from public.profiles p where p.id = v_uid;
+  -- 1 hora por tema (10 módulos × 12 temas = 120 horas)
+  insert into public.certificates (code, user_id, course_id, student_name, document_id, hours)
+  select v_code, v_uid, v_course, p.full_name, p.document_id, least(v_total, 32000)::smallint
+  from public.profiles p where p.id = v_uid;
   return v_code;
 end $$;
 

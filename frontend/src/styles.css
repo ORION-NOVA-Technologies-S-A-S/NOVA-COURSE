@@ -314,3 +314,11 @@ p { margin: 0 0 0.8rem; }
 @media (prefers-reduced-motion: reduce) {
   .av *, .av, .nova-fab, .nova-chat, .nova-bubble { animation: none !important; }
 }
+
+/* Fuentes y referencias */
+.source-list { list-style: none; margin: 16px 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.source { display: flex; flex-direction: column; gap: 4px; padding: 16px 18px; }
+.source a { color: var(--text); font-weight: 600; text-decoration: none; }
+.source a:hover { color: var(--indigo); text-decoration: underline; }
+.source a::after { content: " ↗"; color: var(--muted); }
+.source small { color: var(--silver); }

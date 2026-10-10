@@ -102,7 +102,9 @@ export function NovaChat() {
   }, [openChat]);
 
   const runAction = (a: NovaAction) => {
-    if (a.to) {
+    if (a.href) {
+      window.open(a.href, "_blank", "noopener");
+    } else if (a.to) {
       navigate(a.to);
       if (window.innerWidth < 700) setOpen(false);
     } else if (a.ask) void ask(a.ask);

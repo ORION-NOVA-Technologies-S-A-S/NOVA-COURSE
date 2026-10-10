@@ -24,7 +24,7 @@ export function Catalog() {
   return (
     <section className="wrap section">
       <h1>Catálogo de cursos</h1>
-      <p className="lead muted">Cada curso: 5 módulos · 12 temas por módulo · módulos 1 a 3 gratis.</p>
+      <p className="lead muted">Cada curso: 10 módulos · 12 temas por módulo · módulos 1 al 5 gratis.</p>
       <input
         className="search"
         type="search"
