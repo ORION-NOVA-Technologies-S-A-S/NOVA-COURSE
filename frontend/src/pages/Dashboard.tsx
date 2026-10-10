@@ -4,6 +4,7 @@ import { certificatePdfUrl } from "../api";
 import { useAuth } from "../auth";
 import { ProgressBar } from "../components/CourseCard";
 import { myCourses } from "../data";
+import { CourseArt } from "../components/CourseArt";
 import type { MyCourse } from "../types";
 
 export function Dashboard() {
@@ -34,7 +35,10 @@ export function Dashboard() {
             const pct = c.total_topics ? Math.round((100 * c.completed_topics) / c.total_topics) : 0;
             return (
               <div key={c.slug} className="card my-course" style={{ ["--accent" as string]: c.color }}>
-                <span className="chip">{c.plan === "premium" ? "Curso completo" : "Plan gratis"}</span>
+                <div className="my-course-top">
+                  <span className="chip">{c.plan === "premium" ? "Curso completo" : "Plan gratis"}</span>
+                  <span className="my-art"><CourseArt slug={c.slug} lang={c.slug.startsWith("idioma-") ? (c.slug.endsWith("colombiana") ? "lsc" : "x") : null} /></span>
+                </div>
                 <h3>{c.title}</h3>
                 <p className="muted">{c.completed_topics} de {c.total_topics} temas · {pct}%</p>
                 <ProgressBar value={pct} />

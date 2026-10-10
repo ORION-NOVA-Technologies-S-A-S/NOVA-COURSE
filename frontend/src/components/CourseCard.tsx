@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { formatCOP } from "../api";
 import type { CourseSummary } from "../types";
 import { PHRASES } from "../idiomas/frases";
+import { CourseArt } from "./CourseArt";
 
 /** En los cursos de idiomas, la portada muestra "Hola" en ese idioma. */
 export function coverText(c: { title: string; lang?: string | null }) {
@@ -24,6 +25,7 @@ export function CourseCard({ course }: { course: CourseSummary }) {
   return (
     <Link to={`/cursos/${course.slug}`} className="card course-card" style={{ ["--accent" as string]: course.color }}>
       <div className="course-cover">
+        <CourseArt slug={course.slug} lang={course.lang} />
         <span className={`course-mono ${course.lang ? "hello" : ""}`} lang={course.lang && course.lang !== "lsc" ? course.lang : undefined}>{coverText(course)}</span>
         <span className="chip">{course.category}</span>
       </div>

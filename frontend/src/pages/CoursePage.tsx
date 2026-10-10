@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { backend, certificatePdfUrl, errorMessage, formatCOP } from "../api";
 import { useAuth } from "../auth";
 import { coverText, ProgressBar } from "../components/CourseCard";
+import { CourseArt } from "../components/CourseArt";
 import { getCourse, issueCertificate } from "../data";
 import type { CheckoutResponse, CourseDetail } from "../types";
 import { openNova } from "../nova/NovaChat";
@@ -79,7 +80,10 @@ export function CoursePage() {
             <p className="muted">{course.modules.length} módulos · {course.progress.total} temas · {course.progress.total} horas · Certificado Orion Nova Technologies</p>
           </div>
           <div className="card buy-box">
-            <span className={`course-mono big ${course.lang ? "hello" : ""}`}>{coverText(course)}</span>
+            <span className={`course-mono big ${course.lang ? "hello" : ""}`}>
+              <CourseArt slug={course.slug} lang={course.lang} className="big-art" />
+              {course.lang && <span>{coverText(course)}</span>}
+            </span>
             {user && course.plan ? (
               <>
                 <p><b>{course.progress.percent}%</b> completado · {course.progress.completed}/{course.progress.total} temas</p>

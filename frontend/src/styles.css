@@ -357,3 +357,17 @@ p { margin: 0 0 0.8rem; }
 .feedback.ok { background: rgba(61, 220, 151, .14); color: var(--ok); }
 .feedback.bad { background: rgba(255, 107, 129, .12); color: var(--danger); }
 .center { text-align: center; }
+
+/* Ilustraciones de los cursos */
+.course-art { display: block; color: #fff; }
+.course-cover { height: 140px; overflow: hidden; }
+.course-cover .course-art { position: absolute; top: 12px; right: 14px; width: 92px; height: 92px; opacity: .95; filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .25)); transition: transform .3s ease; }
+.course-card:hover .course-art { transform: scale(1.06) rotate(-2deg); }
+.course-cover .chip { position: relative; z-index: 1; }
+.course-mono { position: relative; z-index: 1; }
+.course-mono.big { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; height: auto; min-height: 150px; padding: 18px 10px; }
+.course-mono.big .big-art { width: 110px; height: 110px; }
+.course-mono.big > span { font-size: 1.6rem; }
+.my-course-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.my-art { width: 52px; height: 52px; border-radius: 14px; padding: 6px; background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 35%, var(--bg))); }
+@media (prefers-reduced-motion: reduce) { .course-card:hover .course-art { transform: none; } }
