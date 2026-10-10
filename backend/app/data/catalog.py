@@ -241,6 +241,11 @@ def _merge() -> None:
 
 _merge()
 
+# Cursos de idiomas (30 idiomas + Lengua de Señas Colombiana), ya con sus 10 módulos y fuentes
+from .idiomas import language_courses  # noqa: E402
+
+COURSES.extend(language_courses(DEFAULT_PRICE_COP))
+
 def lesson_content(course_title: str, module_title: str, topic_title: str, topic_number: int) -> str:
     """Plantilla base de cada lección (Markdown). Reemplázala por el contenido real desde el panel de administración."""
     return f"""## {topic_title}

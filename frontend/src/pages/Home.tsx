@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { listCourses } from "../data";
-import { CourseCard } from "../components/CourseCard";
+import { CourseCard, coverText } from "../components/CourseCard";
 import type { CourseSummary } from "../types";
 import { NovaStage } from "../nova/NovaStage";
 
@@ -50,9 +50,29 @@ export function Home() {
           <Link to="/cursos">Ver todos →</Link>
         </div>
         <div className="grid">
-          {courses.slice(0, 6).map((c) => <CourseCard key={c.slug} course={c} />)}
+          {courses.filter((c) => !c.lang).slice(0, 6).map((c) => <CourseCard key={c.slug} course={c} />)}
         </div>
       </section>
+
+      {courses.some((c) => c.lang) && (
+        <section className="wrap section">
+          <div className="section-head">
+            <h2>Aprende idiomas con NOVA</h2>
+            <Link to="/cursos?categoria=Idiomas">Ver todos →</Link>
+          </div>
+          <p className="muted">
+            {courses.filter((c) => c.lang).length} idiomas del nivel A1 al C1: NOVA te pronuncia cada frase, practicas escucha, lectura y dictado, y repites en voz alta.
+          </p>
+          <div className="lang-chips">
+            {courses.filter((c) => c.lang).map((c) => (
+              <Link key={c.slug} to={`/cursos/${c.slug}`} className="lang-chip" style={{ ["--accent" as string]: c.color }}>
+                <b lang={c.lang && c.lang !== "lsc" ? c.lang : undefined}>{coverText(c)}</b>
+                <span>{c.title}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }

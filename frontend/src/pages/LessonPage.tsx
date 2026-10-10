@@ -7,6 +7,8 @@ import { completeTopic, getLesson } from "../data";
 import type { Lesson } from "../types";
 import { setCurrentLesson } from "../nova/brain";
 import { openNova } from "../nova/NovaChat";
+import { LanguagePractice } from "../idiomas/LanguagePractice";
+import { skillOf } from "../idiomas/skills";
 
 function embedUrl(url: string) {
   const yt = /(?:youtu\.be\/|v=|embed\/)([\w-]{11})/.exec(url);
@@ -71,7 +73,10 @@ export function LessonPage() {
         <span>›</span>
         <span>Módulo {lesson.module.position}: {lesson.module.title}</span>
       </nav>
-      <p className="eyebrow">Tema {lesson.position} de 12 {lesson.completed && "· ✓ Completado"}</p>
+      <p className="eyebrow">
+        Tema {lesson.position} de 12 {lesson.completed && "· ✓ Completado"}
+        {lesson.course.lang && <span className="skill-badge">{skillOf(lesson.title)}</span>}
+      </p>
       {lesson.video_url && (
         <div className="video">
           <iframe src={embedUrl(lesson.video_url)} title={lesson.title} allowFullScreen loading="lazy" />
@@ -83,6 +88,12 @@ export function LessonPage() {
       <article className="card lesson">
         <Markdown source={lesson.content} />
       </article>
+      {lesson.course.lang && lesson.course.lang !== "lsc" && (
+        <LanguagePractice lang={lesson.course.lang} languageName={lesson.course.title} modulePosition={lesson.module.position} content={lesson.content} />
+      )}
+      {lesson.course.lang === "lsc" && !lesson.video_url && (
+        <p className="card practice-note">Las señas de este tema se aprenden en video. Pronto encontrarás aquí el video del tema.</p>
+      )}
       <div className="lesson-nav">
         {lesson.prev_id ? <Link className="btn ghost" to={`/leccion/${lesson.prev_id}`}>← Anterior</Link> : <span />}
         <button className="btn" onClick={completeAndNext} disabled={saving}>

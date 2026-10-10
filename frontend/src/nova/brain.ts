@@ -6,6 +6,7 @@
 import { formatCOP } from "../api";
 import { getCourse, listCourses, myCourses } from "../data";
 import type { CourseSummary, User } from "../types";
+import { PHRASES, SPANISH } from "../idiomas/frases";
 
 export interface NovaAction {
   label: string;
@@ -13,6 +14,7 @@ export interface NovaAction {
   ask?: string; // preguntarle algo a NOVA
   read?: boolean; // leer la lección actual en voz alta
   href?: string; // abrir un sitio externo (fuentes)
+  speak?: { text: string; lang: string }; // pronunciar en otro idioma
 }
 
 export interface NovaReply {
@@ -20,6 +22,8 @@ export interface NovaReply {
   /** Texto para la voz (si es distinto del escrito). */
   say?: string;
   actions?: NovaAction[];
+  /** Frase que NOVA pronuncia en otro idioma después de hablar. */
+  speakTarget?: { text: string; lang: string };
 }
 
 /** Lección abierta en pantalla (la pone LessonPage para que NOVA pueda leerla). */
@@ -112,7 +116,7 @@ export const STARTER_ACTIONS: NovaAction[] = [
 export function greeting(user: User | null): NovaReply {
   const name = user?.full_name.split(" ")[0];
   return {
-    text: `¡Hola${name ? `, ${name}` : ""}! Soy NOVA, la asistente de NOVA COURSE de Orion Nova Technologies. Te ayudo a elegir un curso, te cuento qué es gratis, cómo pagar y cómo sacar tu certificado. Si estás en una lección, también te la puedo leer en voz alta. ¿Qué te gustaría aprender?`,
+    text: `¡Hola${name ? `, ${name}` : ""}! Soy NOVA, la asistente de NOVA COURSE de Orion Nova Technologies. Te ayudo a elegir un curso o un idioma, te cuento qué es gratis, cómo pagar y cómo sacar tu certificado. También te digo cómo se dice algo en otro idioma. Si estás en una lección, también te la puedo leer en voz alta. ¿Qué te gustaría aprender?`,
     actions: STARTER_ACTIONS,
   };
 }
@@ -145,6 +149,47 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
       };
     }
     return { text: `Te leo «${lesson.title}». Puedes detenerme con el botón del parlante.`, say: lesson.content };
+  }
+
+  // ¿Cómo se dice X en un idioma?
+  const howSay = /como se dice (.+?) en ([a-z ]+?) ?$/.exec(t.trim()) ?? /como digo (.+?) en ([a-z ]+?) ?$/.exec(t.trim());
+  if (howSay) {
+    const [, what, langName] = howSay;
+    const langCourse = list.find((c) => c.lang && c.lang !== "lsc" && norm(c.title).startsWith(langName.trim()));
+    if (!langCourse || !langCourse.lang) {
+      return { text: `No encontré el idioma «${langName}». Tenemos ${list.filter((c) => c.lang).length} idiomas.`, actions: [{ label: "Ver idiomas", to: "/cursos?categoria=Idiomas" }] };
+    }
+    const lang = langCourse.lang;
+    const langLower = langCourse.title.toLowerCase();
+    const idx = SPANISH.findIndex((s) => norm(s) === norm(what) || norm(what).includes(norm(s)) && norm(s).length > 3);
+    const raw = idx >= 0 ? PHRASES[lang]?.[idx] : undefined;
+    if (!raw) {
+      return {
+        text: `Todavía no tengo «${what}» en ${langLower}. Por ahora sé frases como: hola, gracias, por favor, ¿cómo te llamas?, los números del 1 al 10, agua o ¿dónde está el baño?`,
+        actions: [{ label: `Curso de ${langCourse.title}`, to: `/cursos/${langCourse.slug}` }],
+      };
+    }
+    const [text, roman] = raw.split("|");
+    return {
+      text: `«${SPANISH[idx]}» en ${langLower} se dice: ${text}${roman ? ` (se pronuncia: ${roman})` : ""}`,
+      say: `${SPANISH[idx]}, en ${langLower}, se dice:`,
+      speakTarget: { text, lang },
+      actions: [{ label: "Escuchar otra vez", speak: { text, lang } }, { label: `Curso de ${langCourse.title}`, to: `/cursos/${langCourse.slug}` }],
+    };
+  }
+
+  // Idiomas
+  if (!course && has(t, "idioma", "idiomas", "lenguas extranjeras", "aprender a hablar", "bilingue")) {
+    const langs = list.filter((c) => c.lang);
+    return {
+      text: `Tenemos ${langs.length} idiomas, del nivel A1 al C1: ${langs.map((c) => c.title).join(", ")}. Los módulos 1 al 5 son gratis. Yo te pronuncio las frases, practicas escucha, lectura y dictado, y puedes repetir en voz alta para que te corrija.`,
+      say: `Tenemos ${langs.length} idiomas, del nivel A1 al C1. Los módulos del uno al cinco son gratis, y yo te pronuncio las frases para que practiques.`,
+      actions: [
+        { label: "Ver idiomas", to: "/cursos?categoria=Idiomas" },
+        { label: "¿Cómo se dice gracias en japonés?", ask: "¿Cómo se dice gracias en japonés?" },
+        ...langs.slice(0, 2).map(goCourse),
+      ],
+    };
   }
 
   // Fuentes y referencias

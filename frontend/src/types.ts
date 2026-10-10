@@ -16,6 +16,7 @@ export interface CourseSummary {
   free_modules: number;
   modules: number;
   topics: number;
+  lang?: string | null;
 }
 
 export interface TopicItem {
@@ -52,6 +53,7 @@ export interface CourseDetail {
   plan: "free" | "premium" | null;
   progress: { completed: number; total: number; percent: number };
   certificate_code: string | null;
+  lang: string | null;
   sources: CourseSource[];
   modules: ModuleItem[];
 }
@@ -63,7 +65,7 @@ export interface Lesson {
   video_url: string | null;
   position: number;
   module: { position: number; title: string };
-  course: { slug: string; title: string };
+  course: { slug: string; title: string; lang: string | null; category: string };
   completed: boolean;
   prev_id: number | null;
   next_id: number | null;

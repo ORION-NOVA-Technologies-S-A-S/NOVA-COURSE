@@ -2,10 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { backend, certificatePdfUrl, errorMessage, formatCOP } from "../api";
 import { useAuth } from "../auth";
-import { initials, ProgressBar } from "../components/CourseCard";
+import { coverText, ProgressBar } from "../components/CourseCard";
 import { getCourse, issueCertificate } from "../data";
 import type { CheckoutResponse, CourseDetail } from "../types";
 import { openNova } from "../nova/NovaChat";
+import { skillOf } from "../idiomas/skills";
 
 export function CoursePage() {
   const { slug = "" } = useParams();
@@ -78,7 +79,7 @@ export function CoursePage() {
             <p className="muted">{course.modules.length} módulos · {course.progress.total} temas · {course.progress.total} horas · Certificado Orion Nova Technologies</p>
           </div>
           <div className="card buy-box">
-            <span className="course-mono big">{initials(course.title)}</span>
+            <span className={`course-mono big ${course.lang ? "hello" : ""}`}>{coverText(course)}</span>
             {user && course.plan ? (
               <>
                 <p><b>{course.progress.percent}%</b> completado · {course.progress.completed}/{course.progress.total} temas</p>
@@ -134,9 +135,10 @@ export function CoursePage() {
                         {m.unlocked && user ? (
                           <Link to={`/leccion/${t.id}`} className={t.completed ? "done" : ""}>
                             <span className="dot" />{t.title}
+                            {course.lang && <span className="skill-badge">{skillOf(t.title)}</span>}
                           </Link>
                         ) : (
-                          <span className="locked"><span className="dot" />{t.title}</span>
+                          <span className="locked"><span className="dot" />{t.title}{course.lang && <span className="skill-badge">{skillOf(t.title)}</span>}</span>
                         )}
                       </li>
                     ))}

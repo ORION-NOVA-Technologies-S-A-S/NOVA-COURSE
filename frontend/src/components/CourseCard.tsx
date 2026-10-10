@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom";
 import { formatCOP } from "../api";
 import type { CourseSummary } from "../types";
+import { PHRASES } from "../idiomas/frases";
+
+/** En los cursos de idiomas, la portada muestra "Hola" en ese idioma. */
+export function coverText(c: { title: string; lang?: string | null }) {
+  if (c.lang === "lsc") return "LSC";
+  const hello = c.lang ? PHRASES[c.lang]?.[0]?.split("|")[0] : undefined;
+  return hello ?? initials(c.title);
+}
 
 export function initials(title: string) {
   return title
@@ -16,7 +24,7 @@ export function CourseCard({ course }: { course: CourseSummary }) {
   return (
     <Link to={`/cursos/${course.slug}`} className="card course-card" style={{ ["--accent" as string]: course.color }}>
       <div className="course-cover">
-        <span className="course-mono">{initials(course.title)}</span>
+        <span className={`course-mono ${course.lang ? "hello" : ""}`} lang={course.lang && course.lang !== "lsc" ? course.lang : undefined}>{coverText(course)}</span>
         <span className="chip">{course.category}</span>
       </div>
       <div className="course-body">

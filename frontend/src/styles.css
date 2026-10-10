@@ -322,3 +322,38 @@ p { margin: 0 0 0.8rem; }
 .source a:hover { color: var(--indigo); text-decoration: underline; }
 .source a::after { content: " ↗"; color: var(--muted); }
 .source small { color: var(--silver); }
+
+/* Idiomas */
+.course-mono.hello { font-size: clamp(1.1rem, 4vw, 1.6rem); max-width: 70%; line-height: 1.15; overflow-wrap: anywhere; }
+.course-mono.big.hello { font-size: 1.9rem; text-align: center; padding: 0 10px; }
+.skill-badge { margin-left: auto; flex: none; font-size: .7rem; font-weight: 600; letter-spacing: .03em; padding: 2px 8px; border-radius: 99px; background: rgba(109, 107, 255, .18); color: #c9cbff; }
+.eyebrow .skill-badge { margin-left: 10px; letter-spacing: .04em; }
+.lang-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 16px; }
+.lang-chip { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 22%, var(--panel)), var(--panel)); color: var(--text); text-decoration: none; }
+.lang-chip:hover { border-color: var(--accent); }
+.lang-chip b { font-size: 1.05rem; overflow-wrap: anywhere; }
+.lang-chip span { font-size: .82rem; color: var(--muted); }
+.practice { margin: 16px 0; display: flex; flex-direction: column; gap: 14px; border-color: rgba(124, 196, 255, .35); }
+.practice-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; }
+.practice-head h3 { margin: 0; }
+.score { font-weight: 700; color: var(--ok); }
+.practice-note { color: var(--gold); font-size: .88rem; margin: 0; }
+.practice-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.practice-tabs button { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 99px; padding: 7px 14px; cursor: pointer; font: 500 .86rem var(--font); }
+.practice-tabs button.on { background: var(--indigo-2); border-color: var(--indigo-2); color: #fff; }
+.practice-tabs button:disabled { opacity: .4; cursor: not-allowed; }
+.flashcard, .quiz { display: flex; flex-direction: column; gap: 10px; align-items: stretch; }
+.phrase { font-family: var(--display); font-size: clamp(1.6rem, 6vw, 2.4rem); text-align: center; margin: 6px 0 0; overflow-wrap: anywhere; }
+.roman { text-align: center; color: var(--silver); font-style: italic; margin: 0; }
+.meaning { text-align: center; color: var(--muted); margin: 0; }
+.practice-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.practice-nav { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.options { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.options button { padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2); color: var(--text); font: 500 .95rem var(--font); cursor: pointer; }
+.options button:hover:not(:disabled) { border-color: var(--indigo); }
+.options button.right { border-color: var(--ok); background: rgba(61, 220, 151, .15); }
+.quiz input { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2); color: var(--text); font-size: 1.05rem; }
+.feedback { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 10px 14px; border-radius: 12px; }
+.feedback.ok { background: rgba(61, 220, 151, .14); color: var(--ok); }
+.feedback.bad { background: rgba(255, 107, 129, .12); color: var(--danger); }
+.center { text-align: center; }

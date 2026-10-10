@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { listCourses } from "../data";
 import { CourseCard } from "../components/CourseCard";
 import type { CourseSummary } from "../types";
@@ -6,7 +7,8 @@ import type { CourseSummary } from "../types";
 export function Catalog() {
   const [courses, setCourses] = useState<CourseSummary[] | null>(null);
   const [q, setQ] = useState("");
-  const [cat, setCat] = useState<string>("Todos");
+  const [params] = useSearchParams();
+  const [cat, setCat] = useState<string>(params.get("categoria") ?? "Todos");
 
   useEffect(() => {
     listCourses().then(setCourses).catch(() => setCourses([]));

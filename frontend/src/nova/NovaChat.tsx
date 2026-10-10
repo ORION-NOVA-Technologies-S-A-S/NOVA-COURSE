@@ -4,7 +4,7 @@ import { useAuth } from "../auth";
 import { avatarState } from "./avatarState";
 import { getCurrentLesson, greeting, reply, type NovaAction, type NovaReply } from "./brain";
 import { NovaAvatar } from "./NovaAvatar";
-import { hasMic, hasTTS, listen, speak, stopSpeech, voiceEnabled, setVoiceEnabled } from "./voice";
+import { hasMic, hasTTS, listen, speak, speakIn, stopSpeech, voiceEnabled, setVoiceEnabled } from "./voice";
 
 interface Msg {
   from: "nova" | "me";
@@ -53,7 +53,8 @@ export function NovaChat() {
 
   const novaSays = useCallback((r: NovaReply) => {
     setMsgs((m) => [...m, { from: "nova", text: r.text, actions: r.actions }]);
-    void speak(r.say ?? r.text);
+    const target = r.speakTarget;
+    void speak(r.say ?? r.text).then(() => (target ? speakIn(target.text, target.lang, 0.85) : undefined));
   }, []);
 
   const ask = useCallback(
@@ -102,7 +103,9 @@ export function NovaChat() {
   }, [openChat]);
 
   const runAction = (a: NovaAction) => {
-    if (a.href) {
+    if (a.speak) {
+      void speakIn(a.speak.text, a.speak.lang, 0.8);
+    } else if (a.href) {
       window.open(a.href, "_blank", "noopener");
     } else if (a.to) {
       navigate(a.to);

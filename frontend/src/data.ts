@@ -3,7 +3,7 @@ import { ApiError } from "./api";
 import { supabase } from "./supabase";
 import type { CourseDetail, CourseSource, CourseSummary, Lesson, ModuleItem, MyCourse } from "./types";
 
-type CourseRow = Omit<CourseSummary, "modules" | "topics"> & { id: number; sources?: CourseSource[] };
+type CourseRow = Omit<CourseSummary, "modules" | "topics"> & { id: number; sources?: CourseSource[]; lang?: string | null };
 type ModuleRow = { id: number; position: number; title: string; topics: { id: number; position: number; title: string }[] };
 
 function check<T>(res: { data: T | null; error: { message: string } | null }): T {
@@ -15,7 +15,7 @@ export async function listCourses(): Promise<CourseSummary[]> {
   const rows = check(
     await supabase
       .from("courses")
-      .select("slug, title, category, color, summary, price_cop, free_modules")
+      .select("slug, title, category, color, summary, price_cop, free_modules, lang")
       .eq("is_published", true)
       .order("title"),
   ) as Omit<CourseSummary, "modules" | "topics">[];
@@ -35,7 +35,7 @@ export async function getCourse(slug: string, userId: string | null): Promise<Co
   const course = check(
     await supabase
       .from("courses")
-      .select("id, slug, title, category, color, summary, price_cop, free_modules, sources")
+      .select("id, slug, title, category, color, summary, price_cop, free_modules, sources, lang")
       .eq("slug", slug)
       .maybeSingle(),
   ) as CourseRow | null;
@@ -78,6 +78,7 @@ export async function getCourse(slug: string, userId: string | null): Promise<Co
     plan,
     progress: { completed, total, percent: total ? Math.round((100 * completed) / total) : 0 },
     certificate_code: certificate,
+    lang: course.lang ?? null,
     sources: Array.isArray(course.sources) ? course.sources : [],
     modules,
   };
@@ -87,14 +88,14 @@ type TopicRow = {
   id: number;
   position: number;
   title: string;
-  modules: { position: number; title: string; course_id: number; courses: { id: number; slug: string; title: string } };
+  modules: { position: number; title: string; course_id: number; courses: { id: number; slug: string; title: string; lang: string | null; category: string } };
 };
 
 export async function getLesson(topicId: number, userId: string): Promise<Lesson> {
   const topic = check(
     await supabase
       .from("topics")
-      .select("id, position, title, modules!inner(position, title, course_id, courses!inner(id, slug, title))")
+      .select("id, position, title, modules!inner(position, title, course_id, courses!inner(id, slug, title, lang, category))")
       .eq("id", topicId)
       .maybeSingle(),
   ) as TopicRow | null;
@@ -123,7 +124,7 @@ export async function getLesson(topicId: number, userId: string): Promise<Lesson
     video_url: body.video_url,
     position: topic.position,
     module: { position: topic.modules.position, title: topic.modules.title },
-    course: { slug: course.slug, title: course.title },
+    course: { slug: course.slug, title: course.title, lang: course.lang ?? null, category: course.category },
     completed: Boolean(check(prog)),
     prev_id: i > 0 ? ids[i - 1] : null,
     next_id: i >= 0 && i < ids.length - 1 ? ids[i + 1] : null,

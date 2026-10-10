@@ -10,14 +10,17 @@ try {
 }
 let token = 0;
 let voices: SpeechSynthesisVoice[] = [];
+let allVoices: SpeechSynthesisVoice[] = [];
 
 export const hasTTS = () => typeof window !== "undefined" && "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
 
 function loadVoices() {
   try {
-    voices = (speechSynthesis.getVoices() || []).filter((v) => /^es/i.test(v.lang));
+    allVoices = speechSynthesis.getVoices() || [];
+    voices = allVoices.filter((v) => /^es/i.test(v.lang));
   } catch {
     voices = [];
+    allVoices = [];
   }
 }
 if (hasTTS()) {
@@ -176,6 +179,56 @@ export function speak(text: string): Promise<void> {
   });
 }
 
+/* ---------- Voz en otros idiomas (cursos de idiomas) ---------- */
+const langBase = (l: string) => l.replace("_", "-").toLowerCase().split("-")[0];
+const SAME_LANGUAGE: Record<string, string[]> = { nb: ["nb", "no", "nn"], he: ["he", "iw"], id: ["id", "in"], fa: ["fa"], bn: ["bn"] };
+
+function voiceFor(lang: string): SpeechSynthesisVoice | null {
+  if (!allVoices.length) loadVoices();
+  const full = lang.toLowerCase();
+  const bases = SAME_LANGUAGE[langBase(lang)] ?? [langBase(lang)];
+  const matches = allVoices.filter((v) => bases.includes(langBase(v.lang)));
+  if (!matches.length) return null;
+  const score = (v: SpeechSynthesisVoice) =>
+    (v.lang.replace("_", "-").toLowerCase() === full ? 20 : 0) + (/natural|neural|online|google/i.test(v.name) ? 10 : 0);
+  return [...matches].sort((a, b) => score(b) - score(a))[0];
+}
+
+/** ¿El dispositivo tiene voz para este idioma? (las voces cargan unos segundos después de abrir la página) */
+export const hasVoiceFor = (lang: string) => hasTTS() && voiceFor(lang) !== null;
+
+/** NOVA pronuncia un texto en el idioma indicado. rate < 1 = más lento. */
+export function speakIn(text: string, lang: string, rate = 0.95): Promise<void> {
+  if (!hasTTS()) return Promise.resolve();
+  const tok = ++token;
+  try {
+    speechSynthesis.cancel();
+  } catch {
+    /* ok */
+  }
+  return new Promise((resolve) => {
+    const u = new SpeechSynthesisUtterance(text);
+    const v = voiceFor(lang);
+    if (v) {
+      u.voice = v;
+      u.lang = v.lang;
+    } else u.lang = lang;
+    u.rate = rate;
+    u.onstart = () => avatarState.set("talk", true);
+    const done = () => {
+      if (tok === token) avatarState.set("talk", false);
+      resolve();
+    };
+    u.onend = done;
+    u.onerror = done;
+    try {
+      speechSynthesis.speak(u);
+    } catch {
+      done();
+    }
+  });
+}
+
 /* ---------- Micrófono ---------- */
 type RecognitionLike = {
   lang: string;
@@ -200,7 +253,7 @@ export const hasMic = () => Boolean(SR);
 let recog: RecognitionLike | null = null;
 
 /** Escucha una frase. Devuelve el texto, o lanza un error con un mensaje claro. */
-export function listen(onState: (listening: boolean) => void): Promise<string> {
+export function listen(onState: (listening: boolean) => void, lang = "es-CO"): Promise<string> {
   if (!SR) return Promise.reject(new Error("Tu navegador no permite hablarle a NOVA. Escribe tu mensaje."));
   if (recog) {
     try {
@@ -215,7 +268,7 @@ export function listen(onState: (listening: boolean) => void): Promise<string> {
     const r = new SR();
     recog = r;
     let heard = "";
-    r.lang = "es-CO";
+    r.lang = lang;
     r.interimResults = false;
     r.maxAlternatives = 1;
     r.onstart = () => {

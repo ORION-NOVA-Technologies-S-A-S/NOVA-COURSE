@@ -4,6 +4,7 @@ CURSOS DE NOVA GRATUITO Y CON SUSCRIPCIÓN
 
 Plataforma de cursos de **ORION NOVA TECHNOLOGIES**: 15 cursos, 10 módulos por curso y 12 temas por módulo (1.800 temas).
 Los módulos 1 al 5 son gratis. Los módulos 6 al 10 y el certificado (120 horas) se pagan.
+**Idiomas:** 30 idiomas (A1 a C1) y la Lengua de Señas Colombiana, con práctica de escucha, lectura, dictado y pronunciación con la voz de NOVA (`backend/app/data/idiomas.py` y `frontend/src/idiomas/`).
 Cada curso tiene una sección de **Fuentes y referencias** con documentos oficiales verificados (`backend/app/data/fuentes.py`).
 
 | Parte | Tecnología |
@@ -104,6 +105,23 @@ Mientras no haya llaves de Wompi, el botón de pago abre un **modo de prueba** q
 - **Módulos 6-10**: solo quien tiene el plan `premium` en ese curso. Lo activa únicamente el servidor tras confirmar el pago con Wompi.
 - **Certificado**: se emite al tener el curso pagado y los 120 temas marcados (120 horas). Incluye código único y QR.
   Cualquiera puede verificarlo en `/verificar/CÓDIGO`.
+
+## Idiomas
+
+- 30 idiomas + Lengua de Señas Colombiana, cada uno con 10 módulos: A1-A2 gratis (módulos 1-5) y B1-C1 de pago (módulos 6-10).
+- En las lecciones de los módulos 1 a 5 hay práctica con 40 frases esenciales por idioma (`frontend/src/idiomas/frases.ts`):
+  tarjetas con voz, «Escucha y elige», «Lee y elige», dictado (idiomas con alfabeto latino) y «Repítelo en voz alta» con el micrófono.
+- Para agregar frases a cualquier tema (por ejemplo, en los módulos 6 a 10), escribe en el contenido desde el panel de administrador:
+
+  ```
+  ### Práctica
+  - I would like a coffee | Quisiera un café
+  - Could you help me? | ¿Podrías ayudarme?
+  ```
+
+- La voz depende del navegador: Chrome y Edge traen voces para casi todos los idiomas; en Android se instalan en Ajustes → Texto a voz.
+- Los videos (YouTube) se agregan por tema desde el panel de administrador. En Lengua de Señas Colombiana el video es indispensable.
+- Recomendación: que un hablante nativo revise las frases de cada idioma.
 
 ## Agregar o cambiar cursos
 

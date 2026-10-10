@@ -22,23 +22,23 @@ def q(v: str) -> str:
 
 lines = [
     "-- =====================================================================",
-    "-- NOVA COURSE · 15 cursos · 10 módulos · 12 temas (1.800 temas) · módulos 1 a 5 gratis",
+    f"-- NOVA COURSE · {len(COURSES)} cursos (incluye idiomas) · 10 módulos · 12 temas · módulos 1 a 5 gratis",
     "-- Pega este archivo en Supabase > SQL Editor y pulsa \"Run\" (después de 01_esquema.sql).",
     "-- No borra ni sobrescribe el contenido que ya hayas editado.",
     "-- Archivo generado por scripts/generar_sql_cursos.py",
     "-- =====================================================================",
     "begin;",
     "",
-    "insert into public.courses (slug, title, category, color, summary, price_cop, free_modules, sources) values",
+    "insert into public.courses (slug, title, category, color, summary, price_cop, free_modules, sources, lang) values",
 ]
 rows = []
 for c in COURSES:
     rows.append(f"  ({q(c['slug'])}, {q(c['title'])}, {q(c['category'])}, {q(c['color'])}, {q(c['summary'])}, "
-                f"{c.get('price_cop', DEFAULT_PRICE_COP)}, {FREE_MODULES}, {q(sources_json(c))}::jsonb)")
+                f"{c.get('price_cop', DEFAULT_PRICE_COP)}, {FREE_MODULES}, {q(sources_json(c))}::jsonb, {q(c['lang']) if c.get('lang') else 'null'})")
 lines.append(",\n".join(rows))
 lines.append("on conflict (slug) do update set title = excluded.title, category = excluded.category,\n"
              "  color = excluded.color, summary = excluded.summary, free_modules = excluded.free_modules,\n"
-             "  sources = excluded.sources;")
+             "  sources = excluded.sources, lang = excluded.lang;")
 lines.append("")
 lines.append("insert into public.modules (course_id, position, title)")
 lines.append("select c.id, v.pos, v.title from (values")
@@ -95,12 +95,15 @@ on conflict (topic_id) do nothing;
 
 commit;
 
--- Comprobación: debe mostrar 15 | 150 | 1800 | 1800 | 63
+-- Comprobación: debe mostrar {EXPECTED}
 select (select count(*) from public.courses) as cursos,
        (select count(*) from public.modules) as modulos,
        (select count(*) from public.topics) as temas,
        (select count(*) from public.topic_contents) as contenidos,
        (select sum(jsonb_array_length(sources)) from public.courses) as fuentes;""")
+n_topics = sum(len(t) for c in COURSES for _, t in c["modules"])
+EXPECTED = f"{len(COURSES)} | {sum(len(c['modules']) for c in COURSES)} | {n_topics} | {n_topics} | {sum(len(c['sources']) for c in COURSES)}"
+lines = [ln.replace("{EXPECTED}", EXPECTED) for ln in lines]
 out = ROOT / "supabase" / "02_cursos.sql"
 out.write_text("\n".join(lines) + "\n", encoding="utf-8")
 print(f"Generado {out} ({out.stat().st_size // 1024} KB)")

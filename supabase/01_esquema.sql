@@ -1,7 +1,7 @@
 -- =====================================================================
 -- ORION NOVA ACADEMY · Esquema para Supabase (PostgreSQL)
 -- Pega este archivo completo en Supabase > SQL Editor y pulsa "Run".
--- Versión 2: 10 módulos por curso (1 a 5 gratis, 6 a 10 de pago) y fuentes por curso.
+-- Versión 3: 10 módulos por curso (1 a 5 gratis, 6 a 10 de pago), fuentes por curso y 31 cursos de idiomas.
 -- Después ejecuta 02_cursos.sql para cargar los 15 cursos y 900 temas.
 -- Se puede ejecutar más de una vez sin dañar datos.
 -- =====================================================================
@@ -43,6 +43,7 @@ create table if not exists public.courses (
   price_cop    integer not null check (price_cop >= 0),
   free_modules smallint not null default 5,
   sources      jsonb not null default '[]'::jsonb,
+  lang         text, -- idioma de los cursos de idiomas (código BCP-47, o 'lsc')
   is_published boolean not null default true
 );
 
@@ -116,6 +117,7 @@ create table if not exists public.certificates (
 
 -- ---------- Actualización a 10 módulos (sirve para bases creadas con la versión anterior) ----------
 alter table public.courses add column if not exists sources jsonb not null default '[]'::jsonb;
+alter table public.courses add column if not exists lang text;
 alter table public.courses alter column free_modules set default 5;
 alter table public.certificates alter column hours set default 120;
 alter table public.modules drop constraint if exists modules_position_check;
