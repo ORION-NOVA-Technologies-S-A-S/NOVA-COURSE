@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { listCourses } from "../data";
 import { CourseCard } from "../components/CourseCard";
 import type { CourseSummary } from "../types";
+import { NovaStage } from "../nova/NovaStage";
 
 export function Home() {
   const [courses, setCourses] = useState<CourseSummary[]>([]);
@@ -14,7 +15,8 @@ export function Home() {
     <>
       <section className="hero">
         <div className="wrap hero-inner">
-          <img className="hero-logo" src="logo-orion-nova-520.jpg" alt="Orion Nova Technologies" width="260" height="260" />
+          <NovaStage />
+          <img className="hero-logo" src="logo-orion-nova-520.jpg" alt="Orion Nova Technologies" width="96" height="96" />
           <span className="eyebrow">ORION NOVA TECHNOLOGIES · NOVA COURSE</span>
           <h1>Aprende lo que mueve el futuro. <em>Empieza gratis.</em></h1>
           <p className="lead">

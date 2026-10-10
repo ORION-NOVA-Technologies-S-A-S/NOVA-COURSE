@@ -5,6 +5,7 @@ import { useAuth } from "../auth";
 import { initials, ProgressBar } from "../components/CourseCard";
 import { getCourse, issueCertificate } from "../data";
 import type { CheckoutResponse, CourseDetail } from "../types";
+import { openNova } from "../nova/NovaChat";
 
 export function CoursePage() {
   const { slug = "" } = useParams();
@@ -102,6 +103,9 @@ export function CoursePage() {
                 {course.progress.percent < 100 ? "Certificado al completar el 100%" : "Obtener certificado"}
               </button>
             )}
+            <button className="btn ghost block" onClick={() => openNova(`Cuéntame del curso ${course.title}`)}>
+              Pregúntale a NOVA por este curso
+            </button>
             <p className="fine">Pago único con PSE, Nequi, Bancolombia o tarjeta (Wompi). Incluye módulos 4 y 5 y certificado.</p>
             {msg && <p className="error">{msg}</p>}
           </div>

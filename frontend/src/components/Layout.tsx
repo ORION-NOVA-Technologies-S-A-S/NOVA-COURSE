@@ -1,6 +1,8 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../auth";
 import { supabaseConfigured } from "../supabase";
+import { NovaAvatarDefs } from "../nova/NovaAvatar";
+import { NovaChat } from "../nova/NovaChat";
 
 export function Logo() {
   return (
@@ -53,6 +55,8 @@ export function Layout() {
           </div>
         </div>
       </footer>
+      <NovaAvatarDefs />
+      <NovaChat />
     </>
   );
 }

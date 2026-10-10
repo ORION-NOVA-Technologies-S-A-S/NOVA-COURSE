@@ -5,6 +5,8 @@ import { useAuth } from "../auth";
 import { Markdown } from "../components/Markdown";
 import { completeTopic, getLesson } from "../data";
 import type { Lesson } from "../types";
+import { setCurrentLesson } from "../nova/brain";
+import { openNova } from "../nova/NovaChat";
 
 function embedUrl(url: string) {
   const yt = /(?:youtu\.be\/|v=|embed\/)([\w-]{11})/.exec(url);
@@ -28,6 +30,14 @@ export function LessonPage() {
       .catch((e) => setError({ status: e instanceof ApiError ? e.status : 0, message: errorMessage(e) }));
     window.scrollTo(0, 0);
   }, [id, user]);
+
+  // NOVA puede leer o resumir la lección abierta
+  useEffect(() => {
+    setCurrentLesson(
+      lesson ? { title: lesson.title, course: lesson.course.title, module: lesson.module.title, content: lesson.content } : null,
+    );
+    return () => setCurrentLesson(null);
+  }, [lesson]);
 
   if (loading) return null;
   if (!user) return <Navigate to={`/ingresar?next=/leccion/${id}`} replace />;
@@ -67,6 +77,9 @@ export function LessonPage() {
           <iframe src={embedUrl(lesson.video_url)} title={lesson.title} allowFullScreen loading="lazy" />
         </div>
       )}
+      <button className="btn ghost sm ask-nova" onClick={() => openNova("Léeme esta lección")}>
+        Que NOVA me lea esta lección
+      </button>
       <article className="card lesson">
         <Markdown source={lesson.content} />
       </article>
