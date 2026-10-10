@@ -1,4 +1,7 @@
-"""Genera los archivos SQL de cursos (parte 1: generales, parte 2: idiomas) a partir del catálogo.
+"""Genera los archivos SQL de cursos a partir del catálogo.
+
+Parte 1: 50 cursos generales · Parte 2: idiomas · Partes 3 y 4: 87 cursos de datos, educación,
+ingeniería, negocios, salud, deporte y tecnología.
 
 Uso:  python scripts/generar_sql_cursos.py
 Edita catalog.py para agregar o cambiar cursos y vuelve a generar el archivo.
@@ -10,6 +13,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "backend"))
 from app.data.catalog import COURSES, DEFAULT_PRICE_COP, FREE_MODULES  # noqa: E402
+from app.data.fuentes_mas import SOURCES_MAS  # noqa: E402
 
 
 def sources_json(c) -> str:
@@ -25,7 +29,7 @@ def build(COURSES, filename: str, header: str) -> None:
         "-- =====================================================================",
         f"-- NOVA COURSE · {header} · {len(COURSES)} cursos · 10 módulos · 12 temas · módulos 1 a 5 gratis",
         "-- Pega este archivo en Supabase > SQL Editor y pulsa \"Run\" (después de 01_esquema.sql).",
-        "-- Orden: 01_esquema.sql, 02_cursos_parte1.sql, 02_cursos_parte2_idiomas.sql",
+        "-- Orden: 01_esquema.sql, 02_cursos_parte1.sql, 02_cursos_parte2_idiomas.sql, 02_cursos_parte3.sql, 02_cursos_parte4.sql",
         "-- No borra ni sobrescribe el contenido que ya hayas editado.",
         "-- Archivo generado por scripts/generar_sql_cursos.py",
         "-- =====================================================================",
@@ -97,7 +101,7 @@ on conflict (topic_id) do nothing;
 
 commit;
 
--- Comprobación: al terminar las dos partes debe mostrar {EXPECTED}
+-- Comprobación: al terminar las cuatro partes debe mostrar {EXPECTED}
 select (select count(*) from public.courses) as cursos,
        (select count(*) from public.modules) as modulos,
        (select count(*) from public.topics) as temas,
@@ -112,5 +116,9 @@ select (select count(*) from public.courses) as cursos,
 
 
 ALL = COURSES
-build([c for c in ALL if not c.get("lang")], "02_cursos_parte1.sql", "Parte 1: cursos generales")
+NUEVOS = [c for c in ALL if c["slug"] in SOURCES_MAS]
+PARTE3 = {"Datos", "Educación", "Ingeniería"}
+build([c for c in ALL if not c.get("lang") and c["slug"] not in SOURCES_MAS], "02_cursos_parte1.sql", "Parte 1: cursos generales")
 build([c for c in ALL if c.get("lang")], "02_cursos_parte2_idiomas.sql", "Parte 2: idiomas")
+build([c for c in NUEVOS if c["category"] in PARTE3], "02_cursos_parte3.sql", "Parte 3: datos, educación e ingeniería")
+build([c for c in NUEVOS if c["category"] not in PARTE3], "02_cursos_parte4.sql", "Parte 4: negocios, salud, deporte y tecnología")

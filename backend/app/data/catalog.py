@@ -254,6 +254,24 @@ for _c in [*COURSES_CIENCIAS, *COURSES_SOCIALES, *COURSES_ARTES]:
         "sources": SOURCES_NUEVOS[_c["slug"]],
     })
 
+# 87 cursos de datos, educación, ingeniería, negocios, salud, deporte y tecnología
+from .cursos_datos import COURSES_DATOS  # noqa: E402
+from .cursos_deporte import COURSES_DEPORTE  # noqa: E402
+from .cursos_educacion import COURSES_EDUCACION  # noqa: E402
+from .cursos_ingenieria import COURSES_INGENIERIA  # noqa: E402
+from .cursos_negocios import COURSES_NEGOCIOS  # noqa: E402
+from .cursos_salud import COURSES_SALUD  # noqa: E402
+from .cursos_tecnologia import COURSES_TECNOLOGIA  # noqa: E402
+from .fuentes_mas import SOURCES_MAS  # noqa: E402
+
+for _c in [*COURSES_DATOS, *COURSES_EDUCACION, *COURSES_INGENIERIA, *COURSES_NEGOCIOS,
+           *COURSES_SALUD, *COURSES_DEPORTE, *COURSES_TECNOLOGIA]:
+    COURSES.append({
+        **_c,
+        "modules": [(title, [t.strip() for t in topics.split(";")]) for title, topics in _c["modules"]],
+        "sources": SOURCES_MAS[_c["slug"]],
+    })
+
 # Cursos de idiomas (30 idiomas + Lengua de Señas Colombiana), ya con sus 10 módulos y fuentes
 from .idiomas import language_courses  # noqa: E402
 
