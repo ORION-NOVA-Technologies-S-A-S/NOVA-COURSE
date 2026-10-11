@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { backend, certificatePdfUrl, errorMessage, formatCOP } from "../api";
+import { apiConfigured, backend, certificatePdfUrl, errorMessage, formatCOP } from "../api";
+import { WompiLinkPay } from "../components/WompiLinkPay";
 import { useAuth } from "../auth";
 import { coverText, ProgressBar } from "../components/CourseCard";
 import { CourseArt } from "../components/CourseArt";
@@ -17,6 +18,7 @@ export function CoursePage() {
   const [notFound, setNotFound] = useState(false);
   const [open, setOpen] = useState<number>(1);
   const [msg, setMsg] = useState("");
+  const [payOpen, setPayOpen] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(() => {
@@ -39,6 +41,8 @@ export function CoursePage() {
 
   const buy = async () => {
     if (!user) return navigate(`/ingresar?next=/cursos/${slug}`);
+    // Sin servidor de pagos publicado: se paga con el link de Wompi y se confirma con el número de transacción
+    if (!apiConfigured) return setPayOpen(true);
     setBusy(true);
     setMsg("");
     try {
@@ -117,6 +121,18 @@ export function CoursePage() {
               Pregúntale a NOVA por este curso
             </button>
             <p className="fine">Pago único con PSE, Nequi, Bancolombia o tarjeta (Wompi). Incluye los módulos {course.free_modules + 1} al {course.modules.length} y el certificado.</p>
+            {payOpen && course.plan !== "premium" && (
+              <WompiLinkPay
+                slug={course.slug}
+                title={course.title}
+                price={course.price_cop}
+                onClose={() => setPayOpen(false)}
+                onDone={() => {
+                  setPayOpen(false);
+                  load();
+                }}
+              />
+            )}
             {msg && <p className="error">{msg}</p>}
           </div>
         </div>

@@ -174,8 +174,8 @@ export function ProfilePage() {
               <h3>Herramientas de administrador</h3>
               <div className="admin-link-grid">
                 <Link className="admin-link" to="/admin">
-                  <b>📚 Contenido de los cursos</b>
-                  <span className="muted small">Edita lecciones, videos y precios.</span>
+                  <b>💳 Pagos y contenido</b>
+                  <span className="muted small">Aprueba pagos, edita lecciones, videos y precios.</span>
                 </Link>
                 <Link className="admin-link" to="/cursos">
                   <b>🗂️ Catálogo</b>

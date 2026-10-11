@@ -244,3 +244,45 @@ export async function removeAvatar(userId: string) {
   const { error } = await supabase.from("profiles").update({ avatar_url: null }).eq("id", userId);
   if (error) throw error;
 }
+
+/* ---------- Pagos con el link de Wompi (sin servidor) ---------- */
+export const DEFAULT_WOMPI_LINK = "https://checkout.wompi.co/l/VPOS_7MzSXf";
+
+export async function getPaymentLink(): Promise<string> {
+  const { data } = await supabase.from("settings").select("value").eq("key", "public_wompi_link_url").maybeSingle();
+  return (data as { value?: string } | null)?.value || DEFAULT_WOMPI_LINK;
+}
+
+export async function claimWompiPayment(slug: string, txId: string): Promise<{ status: string; message: string }> {
+  const { data, error } = await supabase.rpc("claim_wompi_payment", { p_slug: slug, p_tx_id: txId.trim() });
+  if (error) {
+    if (/claim_wompi_payment|schema cache/i.test(error.message)) throw new Error("Falta activar los pagos: ejecuta el archivo 05_pagos_wompi_link.sql en Supabase.");
+    throw error;
+  }
+  return data as { status: string; message: string };
+}
+
+export interface AdminPayment {
+  id: number;
+  created_at: string;
+  status: string;
+  student: string | null;
+  email: string;
+  course: string;
+  amount_cop: number;
+  method: string | null;
+  tx_id: string | null;
+  customer_email: string | null;
+}
+
+export async function adminPayments(onlyReview: boolean): Promise<AdminPayment[]> {
+  const { data, error } = await supabase.rpc("admin_payments", { p_only_review: onlyReview });
+  if (error) throw error;
+  return (data ?? []) as AdminPayment[];
+}
+
+export async function adminReviewPayment(id: number, approve: boolean): Promise<string> {
+  const { data, error } = await supabase.rpc("admin_review_payment", { p_id: id, p_approve: approve });
+  if (error) throw error;
+  return data as string;
+}

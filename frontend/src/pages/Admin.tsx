@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { errorMessage } from "../api";
 import { useAuth } from "../auth";
+import { AdminPayments } from "../components/AdminPayments";
 import { Markdown } from "../components/Markdown";
 import { adminCourseTopics, adminGetContent, adminSaveContent, adminSavePrice, listCourses } from "../data";
 import type { CourseSummary } from "../types";
@@ -70,6 +71,8 @@ export function Admin() {
   return (
     <section className="wrap section">
       <h1>Administración</h1>
+      <AdminPayments />
+      <h2>Contenido de los cursos</h2>
       <p className="muted">Escribe el contenido real de cada tema y agrega su video de YouTube.</p>
       <div className="admin-bar card">
         <label>Curso

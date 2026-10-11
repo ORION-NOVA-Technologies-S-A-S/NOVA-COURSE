@@ -454,3 +454,26 @@ button.nav-avatar[aria-expanded="true"] .user-avatar { border-color: var(--indig
 .user-dropdown-links { display: grid; border-top: 1px solid var(--line); padding-top: 6px; }
 .user-dropdown-links a { color: var(--text); text-decoration: none; padding: 9px 8px; border-radius: 8px; font-size: .92rem; }
 .user-dropdown-links a:hover, .user-dropdown-links a:focus-visible { background: var(--bg-2); }
+
+/* ---------- Pago con link de Wompi ---------- */
+.pay-box { display: grid; gap: 8px; text-align: left; padding: 14px; border-radius: 14px; background: var(--bg-2); border: 1px solid var(--line); margin: 6px 0; }
+.pay-head { display: flex; justify-content: space-between; align-items: center; }
+.pay-amount { font-family: var(--display); font-size: 1.6rem; margin: 0; color: var(--gold); }
+.pay-steps { margin: 0; padding-left: 20px; display: grid; gap: 12px; font-size: .9rem; }
+.pay-steps li { display: list-item; }
+.pay-steps li > * { display: block; margin-top: 6px; }
+.pay-steps li > .pay-form { display: grid; }
+.pay-steps li::marker { color: var(--gold); font-weight: 700; }
+.pay-form { display: grid; gap: 8px; }
+.pay-form input { padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--text); font: .95rem var(--font); }
+.admin-payments { margin: 16px 0 28px; display: grid; gap: 10px; }
+.admin-payments-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.admin-payments-head h2 { margin: 0; }
+.pay-table { display: grid; gap: 8px; }
+.pay-row { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg-2); }
+.pay-row code { overflow-wrap: anywhere; }
+.pay-row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.status-pill { font-size: .75rem; padding: 4px 10px; border-radius: 99px; background: rgba(255,255,255,.1); }
+.status-pill.s-approved { background: rgba(61,220,151,.16); color: var(--ok); }
+.status-pill.s-review { background: rgba(244,201,93,.18); color: var(--gold); }
+.status-pill.s-declined { background: rgba(255,107,129,.14); color: var(--danger); }
