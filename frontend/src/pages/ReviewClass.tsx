@@ -91,6 +91,9 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
   const [listening, setListening] = useState(false);
   const [typed, setTyped] = useState("");
   const [notice, setNotice] = useState("");
+  const [tries, setTries] = useState(0);
+  const [wrongPicks, setWrongPicks] = useState<number[]>([]);
+  const [retry, setRetry] = useState<Outcome | null>(null);
   const q = questions[step];
   const done = step >= questions.length;
   const lessonOf = useMemo(() => new Map(course.modules.flatMap((m) => m.topics.map((t) => [t.id, m.unlocked] as const))), [course]);
@@ -101,6 +104,9 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
     setOutcome(null);
     setTyped("");
     setNotice("");
+    setTries(0);
+    setWrongPicks([]);
+    setRetry(null);
     if (done) {
       avatarState.pulse("happy", 1500);
       avatarState.pulse("wave", 2500);
@@ -117,26 +123,46 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
 
   const finish = (ok: boolean, text: string, tips?: string[]) => {
     setOutcome({ ok, text, tips });
+    setRetry(null);
     if (ok) {
       setScore((s) => s + 1);
       avatarState.pulse("happy", 1400);
-    } else if (q.topicTitle) setMistakes((m) => [...m, { title: q.topicTitle!, topicId: q.topicId }]);
+    }
     void speak(ok ? text : `${text} ${tips?.join(" ") ?? ""}`);
   };
 
+  /** Primer error: NOVA no da la respuesta, pide que lo intente de nuevo. Al segundo error, explica la correcta. */
+  const wrong = (text: string, tips?: string[]) => {
+    const n = tries + 1;
+    setTries(n);
+    if (n === 1 && q.topicTitle) setMistakes((m) => [...m, { title: q.topicTitle!, topicId: q.topicId }]);
+    avatarState.pulse("think", 1200);
+    setRetry({ ok: false, text, tips });
+    void speak(`${text} ${tips?.join(" ") ?? ""}`);
+    return n;
+  };
+
+  const revealChoice = () => {
+    if (q.kind !== "choice") return;
+    finish(false, `La respuesta correcta es la ${LETTERS[q.correct]}: «${q.options[q.correct]}». ${q.explanation}`);
+  };
+
   const answerChoice = (i: number) => {
-    if (outcome || q.kind !== "choice") return;
+    if (outcome || q.kind !== "choice" || wrongPicks.includes(i)) return;
     setPicked(i);
     const cq = q as ChoiceQuestion;
-    if (i === cq.correct) finish(true, `¡Correcto! ${cq.explanation}`);
-    else finish(false, `Te equivocaste. La respuesta correcta es la ${LETTERS[cq.correct]}: «${cq.options[cq.correct]}». ${cq.explanation}`);
+    if (i === cq.correct) return finish(true, `${tries === 0 ? "¡Correcto!" : "¡Ahora sí, correcto!"} ${cq.explanation}`);
+    setWrongPicks((w) => [...w, i]);
+    const n = wrong("Te equivocaste. Piénsalo otra vez y vuelve a intentarlo para mejorar.");
+    if (n >= 2) revealChoice();
   };
 
   const answerExplain = (text: string) => {
-    if (q.kind !== "explain" || !text.trim()) return;
+    if (q.kind !== "explain" || !text.trim() || outcome) return;
     const r = reviewExplanation(text, q.keywords);
-    if (r.ok) finish(true, r.example ? "¡Muy bien explicado! Mencionaste las ideas clave y diste un ejemplo." : "¡Bien explicado! Mencionaste las ideas clave.", r.example ? [] : r.tips);
-    else finish(false, "Tu explicación todavía está incompleta.", r.tips);
+    if (r.ok) return finish(true, r.example ? "¡Muy bien explicado! Mencionaste las ideas clave y diste un ejemplo." : "¡Bien explicado! Mencionaste las ideas clave.", r.example ? [] : r.tips);
+    const n = wrong("Tu explicación todavía está incompleta. Repítela para mejorar:", r.tips);
+    if (n >= 2) finish(false, "Buen intento. Lee la lección de este tema y vuelve a explicarlo luego.", r.tips);
   };
 
   const talk = async () => {
@@ -167,6 +193,8 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
               <p>¡Terminaste! Acertaste {score} de {questions.length}.</p>
             ) : outcome ? (
               <p className={outcome.ok ? "nova-ok" : "nova-bad"}>{outcome.ok ? "¡Muy bien! 🎉" : "Te corrijo 👇"}</p>
+            ) : retry ? (
+              <p className="nova-bad">¡Inténtalo otra vez! 💪</p>
             ) : (
               <p className="meaning">{q.kind === "explain" ? "Te escucho: explícame el tema." : "Elige o di la respuesta."}</p>
             )}
@@ -210,8 +238,8 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
                 {q.options.map((o, i) => (
                   <button
                     key={i}
-                    disabled={Boolean(outcome)}
-                    className={outcome ? (i === q.correct ? "right" : i === picked ? "wrong" : "") : ""}
+                    disabled={Boolean(outcome) || wrongPicks.includes(i)}
+                    className={outcome ? (i === q.correct ? "right" : wrongPicks.includes(i) || i === picked ? "wrong" : "") : wrongPicks.includes(i) ? "wrong" : ""}
                     onClick={() => answerChoice(i)}
                   >
                     <b>{LETTERS[i]}.</b> {o}
@@ -238,11 +266,20 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
                 </button>
               )}
               {!outcome && <button className="btn ghost sm" onClick={() => void speak(q.prompt)}>Repetir la pregunta</button>}
-              {outcome && !outcome.ok && q.kind === "explain" && (
-                <button className="btn ghost sm" onClick={() => setOutcome(null)}>Intentar otra vez</button>
+              {!outcome && tries > 0 && q.kind === "choice" && (
+                <button className="btn ghost sm" onClick={revealChoice}>Ver la respuesta</button>
               )}
             </div>
             {notice && <p className="practice-note" role="status">{notice}</p>}
+
+            {retry && !outcome && (
+              <div className="feedback bad" role="status">
+                <span>
+                  🔁 {retry.text}
+                  {retry.tips && retry.tips.length > 0 && <ul className="review-tips">{retry.tips.map((t) => <li key={t}>{t}</li>)}</ul>}
+                </span>
+              </div>
+            )}
 
             {outcome && (
               <div className={`feedback ${outcome.ok ? "ok" : "bad"}`} role="status">

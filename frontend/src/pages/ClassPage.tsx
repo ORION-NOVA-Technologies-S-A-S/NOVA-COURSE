@@ -168,6 +168,7 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
   const [listening, setListening] = useState(false);
   const [typed, setTyped] = useState("");
   const [notice, setNotice] = useState("");
+  const [tries, setTries] = useState(0);
   const [voiceOk, setVoiceOk] = useState(() => hasVoiceFor(lang));
   const rtl = RTL.includes(lang.split("-")[0]);
 
@@ -190,6 +191,7 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
     setReply(null);
     setTyped("");
     setNotice("");
+    setTries(0);
     if (done) {
       avatarState.pulse("happy", 1500);
       avatarState.pulse("wave", 2500);
@@ -209,9 +211,12 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
     const status = best >= 0.8 ? "ok" : best >= 0.55 ? "almost" : "bad";
     setResult({ status, heard });
     if (status !== "ok") {
-      // NOVA corrige en voz alta y pronuncia la respuesta correcta
+      // Primer error: NOVA pide repetir para mejorar. Desde el segundo, dice y pronuncia la respuesta correcta.
+      const n = tries + 1;
+      setTries(n);
       const right = phrase(turn.expect[0]).text;
-      void speak(status === "almost" ? "¡Casi! Escucha cómo se dice." : "Te equivocaste. Escucha cómo se dice.").then(() => speakIn(right, lang, 0.85));
+      if (n < 2) void speak(status === "almost" ? "¡Casi! Repítelo otra vez para mejorar." : "Te equivocaste. Inténtalo otra vez para mejorar.");
+      else void speak("Escucha cómo se dice y repítelo.").then(() => speakIn(right, lang, 0.85));
     }
     if (status === "ok") {
       if (turn.after === undefined) void speak("¡Muy bien!");
@@ -328,13 +333,13 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
                   {result.status === "ok"
                     ? `¡Muy bien! Te entendí: «${result.heard}»`
                     : result.status === "almost"
-                      ? `¡Casi! Te entendí: «${result.heard}». Escucha la respuesta y vuelve a intentarlo.`
-                      : `Te entendí: «${result.heard}». Inténtalo otra vez o mira la respuesta.`}
+                      ? `¡Casi! Te entendí: «${result.heard}». ${tries >= 2 ? "Escucha cómo se dice y repítelo." : "Repítelo otra vez para mejorar."}`
+                      : `Te entendí: «${result.heard}». ${tries >= 2 ? "Mira cómo se dice y repítelo." : "Te equivocaste: inténtalo otra vez para mejorar."}`}
                 </span>
               </div>
             )}
 
-            {(revealed || (result && result.status !== "ok")) && (
+            {(revealed || (result && result.status !== "ok" && tries >= 2)) && (
               <div className="class-answer">
                 <span className="muted">Se dice:</span>
                 {turn.expect.slice(0, revealed ? turn.expect.length : 1).map((k) => (
