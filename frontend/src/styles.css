@@ -438,3 +438,19 @@ p { margin: 0 0 0.8rem; }
 .admin-link { display: grid; gap: 4px; padding: 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2); color: var(--text); text-decoration: none; }
 .admin-link:hover { border-color: var(--indigo); }
 @media (max-width: 820px) { .profile-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Menú desplegable de la cuenta ---------- */
+.user-menu { position: relative; flex: none; }
+button.nav-avatar { background: none; border: 0; cursor: pointer; padding: 2px; border-radius: 50%; }
+button.nav-avatar[aria-expanded="true"] .user-avatar { border-color: var(--indigo); }
+.user-dropdown { position: absolute; right: 0; top: calc(100% + 8px); width: min(300px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px; box-shadow: 0 18px 40px rgba(0,0,0,.45); display: grid; gap: 10px; z-index: 50; }
+.user-dropdown::before { content: ""; position: absolute; top: -10px; left: 0; right: 0; height: 10px; }
+.user-dropdown-head { display: flex; gap: 12px; align-items: center; }
+.user-dropdown-head > div { display: grid; gap: 2px; min-width: 0; }
+.user-dropdown-head b { overflow-wrap: anywhere; }
+.user-dropdown-head .small { overflow-wrap: anywhere; }
+.user-dropdown-head .chip { justify-self: start; margin-top: 4px; }
+.user-dropdown-bio { margin: 0; padding: 8px 10px; background: var(--bg-2); border-radius: 10px; }
+.user-dropdown-links { display: grid; border-top: 1px solid var(--line); padding-top: 6px; }
+.user-dropdown-links a { color: var(--text); text-decoration: none; padding: 9px 8px; border-radius: 8px; font-size: .92rem; }
+.user-dropdown-links a:hover, .user-dropdown-links a:focus-visible { background: var(--bg-2); }

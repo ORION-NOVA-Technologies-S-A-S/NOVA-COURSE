@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { errorMessage } from "../api";
 import { useAuth } from "../auth";
 import { removeAvatar, updateProfile, uploadAvatar } from "../data";
@@ -28,9 +28,15 @@ export function ProfilePage() {
   const navigate = useNavigate();
   const fileRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({ full_name: "", document_id: "", phone: "", bio: "" });
-  const [editing, setEditing] = useState(false);
+  const [params] = useSearchParams();
+  const [editing, setEditing] = useState(params.get("editar") === "1");
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const wantsEdit = params.get("editar") === "1";
+  useEffect(() => {
+    if (wantsEdit) setEditing(true);
+  }, [wantsEdit]);
 
   useEffect(() => {
     if (user) setForm({ full_name: user.full_name, document_id: user.document_id ?? "", phone: user.phone ?? "", bio: user.bio ?? "" });

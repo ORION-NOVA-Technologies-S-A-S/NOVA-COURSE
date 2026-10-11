@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
-import { UserAvatar } from "../pages/ProfilePage";
+import { UserMenu } from "./UserMenu";
 import { useAuth } from "../auth";
 import { supabaseConfigured } from "../supabase";
 import { NovaAvatarDefs } from "../nova/NovaAvatar";
@@ -30,13 +30,7 @@ export function Layout() {
             <NavLink to="/verificar">Verificar</NavLink>
             {user && <NavLink to="/mi-aprendizaje">Mi aprendizaje</NavLink>}
           </nav>
-          {user ? (
-            <Link to="/perfil" className="nav-avatar" aria-label={user.role === "admin" ? "Mi perfil y panel de administrador" : "Mi perfil"} title="Mi perfil">
-              <UserAvatar name={user.full_name} url={user.avatar_url} size={34} />
-            </Link>
-          ) : (
-            <Link className="btn sm" to="/ingresar">Ingresar</Link>
-          )}
+          {user ? <UserMenu /> : <Link className="btn sm" to="/ingresar">Ingresar</Link>}
         </div>
       </header>
       {!supabaseConfigured && (
