@@ -279,13 +279,17 @@ export function listen(onState: (listening: boolean) => void, lang = "es-CO"): P
       heard = e.results?.[0]?.[0]?.transcript ?? "";
     };
     r.onerror = (e) => {
-      reject(
-        new Error(
-          e.error === "not-allowed" || e.error === "service-not-allowed"
-            ? "El navegador no dio permiso al micrófono. Escribe tu mensaje."
-            : "No pude escucharte. Intenta de nuevo o escribe.",
-        ),
-      );
+      if (e.error === "aborted") return resolve("");
+      const messages: Record<string, string> = {
+        "not-allowed": "El navegador no dio permiso al micrófono. Actívalo en el candado de la barra de direcciones, o escribe tu respuesta.",
+        "service-not-allowed": "El navegador no dio permiso al micrófono. Actívalo en el candado de la barra de direcciones, o escribe tu respuesta.",
+        "no-speech": "No escuché nada. Pulsa el botón y habla enseguida, cerca del micrófono.",
+        "audio-capture": "No encontré un micrófono. Revisa que esté conectado y seleccionado en el navegador.",
+        network:
+          "Tu navegador no tiene el servicio de reconocimiento de voz (pasa en Brave, Opera y otros). Usa Google Chrome o Microsoft Edge, o escribe tu respuesta.",
+        "language-not-supported": "Tu navegador no reconoce la voz en este idioma. Escribe tu respuesta.",
+      };
+      reject(new Error(messages[e.error] ?? "No pude escucharte. Intenta de nuevo o escribe tu respuesta."));
     };
     r.onend = () => {
       recog = null;

@@ -123,6 +123,7 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
   const [score, setScore] = useState(0);
   const [listening, setListening] = useState(false);
   const [typed, setTyped] = useState("");
+  const [notice, setNotice] = useState("");
   const [voiceOk, setVoiceOk] = useState(() => hasVoiceFor(lang));
   const rtl = RTL.includes(lang.split("-")[0]);
 
@@ -144,6 +145,7 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
     setRevealed(false);
     setReply(null);
     setTyped("");
+    setNotice("");
     if (done) {
       avatarState.pulse("happy", 1500);
       avatarState.pulse("wave", 2500);
@@ -157,7 +159,9 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
 
   const check = (heard: string) => {
     if (!heard.trim() || !turn) return;
-    const best = Math.max(...turn.expect.map((k) => similarity(heard, phrase(k).text)));
+    setNotice("");
+    // También vale escribir la pronunciación (por ejemplo, pinyin «wo hen hao»)
+    const best = Math.max(...turn.expect.flatMap((k) => [similarity(heard, phrase(k).text), phrase(k).roman ? similarity(heard, phrase(k).roman!) : 0]));
     const status = best >= 0.8 ? "ok" : best >= 0.55 ? "almost" : "bad";
     setResult({ status, heard });
     if (status === "ok") {
@@ -171,11 +175,14 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
   };
 
   const speakAnswer = async () => {
+    setNotice("");
+    setResult(null);
     try {
       const heard = await listen(setListening, lang);
-      check(heard);
+      if (heard.trim()) check(heard);
+      else setNotice("No escuché nada. Pulsa el botón y habla enseguida, cerca del micrófono.");
     } catch (e) {
-      setResult({ status: "bad", heard: e instanceof Error ? e.message : "No pude escucharte." });
+      setNotice(e instanceof Error ? e.message : "No pude escucharte. Intenta de nuevo o escribe tu respuesta.");
     }
   };
 
@@ -256,12 +263,14 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
                 dir={rtl ? "rtl" : "ltr"}
                 value={typed}
                 onChange={(e) => setTyped(e.target.value)}
-                placeholder={hasMic() ? "…o escribe tu respuesta" : "Escribe tu respuesta"}
+                placeholder={hasMic() ? "…o escribe tu respuesta (también vale la pronunciación)" : "Escribe tu respuesta (también vale la pronunciación)"}
                 autoComplete="off"
               />
               <button className="btn ghost sm">Comprobar</button>
             </form>
             {!hasMic() && <p className="muted small">Para responder hablando usa Chrome o Edge.</p>}
+
+            {notice && <p className="practice-note" role="status">{notice}</p>}
 
             {result && (
               <div className={`feedback ${result.status === "ok" ? "ok" : "bad"}`} role="status">
