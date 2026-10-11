@@ -2,11 +2,27 @@ import { useEffect, useState, type FormEvent } from "react";
 import { errorMessage, formatCOP } from "../api";
 import { claimWompiPayment, DEFAULT_WOMPI_LINK, getPaymentLink } from "../data";
 
+const PENDING = "nova.pendingPay";
+function rememberPending(slug: string) {
+  try {
+    localStorage.setItem(PENDING, slug);
+  } catch {
+    /* sin almacenamiento */
+  }
+}
+function forgetPending() {
+  try {
+    localStorage.removeItem(PENDING);
+  } catch {
+    /* sin almacenamiento */
+  }
+}
+
 /** Pago con el link de Wompi: el estudiante paga y luego escribe el número de la transacción. */
-export function WompiLinkPay({ slug, title, price, onDone, onClose }: { slug: string; title: string; price: number; onDone: () => void; onClose: () => void }) {
+export function WompiLinkPay({ slug, title, price, initialTx = "", onDone, onClose }: { slug: string; title: string; price: number; initialTx?: string; onDone: () => void; onClose: () => void }) {
   const [link, setLink] = useState(DEFAULT_WOMPI_LINK);
   const [opened, setOpened] = useState(false);
-  const [tx, setTx] = useState("");
+  const [tx, setTx] = useState(initialTx);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
 
@@ -14,14 +30,25 @@ export function WompiLinkPay({ slug, title, price, onDone, onClose }: { slug: st
     getPaymentLink().then(setLink).catch(() => undefined);
   }, []);
 
+  // Si volvió desde Wompi con el número de la transacción, se confirma solo
+  useEffect(() => {
+    if (initialTx) void check(initialTx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialTx]);
+
   const confirm = async (e: FormEvent) => {
     e.preventDefault();
-    if (!tx.trim()) return;
+    await check(tx);
+  };
+
+  const check = async (value: string) => {
+    if (!value.trim()) return;
     setBusy(true);
     setResult(null);
     try {
-      const r = await claimWompiPayment(slug, tx);
+      const r = await claimWompiPayment(slug, value);
       setResult({ ok: r.status === "approved" || r.status === "review", text: r.message });
+      if (r.status === "approved" || r.status === "review") forgetPending();
       if (r.status === "approved") window.setTimeout(onDone, 1200);
     } catch (err) {
       setResult({ ok: false, text: errorMessage(err, "No pudimos confirmar el pago.") });
@@ -42,7 +69,10 @@ export function WompiLinkPay({ slug, title, price, onDone, onClose }: { slug: st
       <ol className="pay-steps">
         <li>
           <span>Abre Wompi y escribe el valor exacto: <b>{formatCOP(price)}</b>.</span>
-          <a className="btn block" href={link} target="_blank" rel="noopener noreferrer" onClick={() => setOpened(true)}>
+          <a className="btn block" href={link} target="_blank" rel="noopener noreferrer" onClick={() => {
+              setOpened(true);
+              rememberPending(slug);
+            }}>
             Pagar con Wompi ↗
           </a>
         </li>

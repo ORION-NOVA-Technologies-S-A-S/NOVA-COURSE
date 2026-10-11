@@ -24,6 +24,19 @@ import "./styles.css";
     const tx = /[?&]id=([\w-]+)/.exec(search)?.[1];
     const target = `#/pago/resultado?ref=${ref}${tx ? `&id=${tx}` : ""}`;
     window.history.replaceState(null, "", window.location.origin + window.location.pathname + target);
+  } else {
+    // Regreso desde el link de pago de Wompi: ...?id=TRANSACCION → vuelve al curso que estaba pagando y confirma solo
+    const tx = /[?&]id=([\w-]+)/.exec(search)?.[1];
+    let slug: string | null = null;
+    try {
+      slug = localStorage.getItem("nova.pendingPay");
+    } catch {
+      /* sin almacenamiento */
+    }
+    if (tx) {
+      const target = slug ? `#/cursos/${slug}?tx=${tx}` : `#/mi-aprendizaje`;
+      window.history.replaceState(null, "", window.location.origin + window.location.pathname + target);
+    }
   }
 }
 

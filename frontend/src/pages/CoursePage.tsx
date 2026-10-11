@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { apiConfigured, backend, certificatePdfUrl, errorMessage, formatCOP } from "../api";
 import { WompiLinkPay } from "../components/WompiLinkPay";
 import { useAuth } from "../auth";
@@ -18,7 +18,9 @@ export function CoursePage() {
   const [notFound, setNotFound] = useState(false);
   const [open, setOpen] = useState<number>(1);
   const [msg, setMsg] = useState("");
-  const [payOpen, setPayOpen] = useState(false);
+  const [params] = useSearchParams();
+  const returnTx = params.get("tx") ?? "";
+  const [payOpen, setPayOpen] = useState(Boolean(returnTx));
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(() => {
@@ -126,6 +128,7 @@ export function CoursePage() {
                 slug={course.slug}
                 title={course.title}
                 price={course.price_cop}
+                initialTx={returnTx}
                 onClose={() => setPayOpen(false)}
                 onDone={() => {
                   setPayOpen(false);
