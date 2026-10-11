@@ -286,3 +286,11 @@ export async function adminReviewPayment(id: number, approve: boolean): Promise<
   if (error) throw error;
   return data as string;
 }
+
+/** Contenido de varias lecciones a la vez (solo las que el estudiante puede ver). */
+export async function lessonContents(topicIds: number[]): Promise<{ topic_id: number; content: string }[]> {
+  if (!topicIds.length) return [];
+  const { data, error } = await supabase.from("topic_contents").select("topic_id, content").in("topic_id", topicIds);
+  if (error) return [];
+  return (data ?? []) as { topic_id: number; content: string }[];
+}

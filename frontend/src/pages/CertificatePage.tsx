@@ -79,7 +79,7 @@ export function CertificatePage() {
               <span>Escanea para verificar</span>
             </div>
           </div>
-          <p className="cert-legal">Educación informal (Decreto 1075 de 2015). No conduce a título.</p>
+          <p className="cert-legal">Decreto 1075 de 2015</p>
         </div>
       </article>
     </section>

@@ -111,6 +111,13 @@ export function Admin() {
                 </label>
                 <label>Contenido (## título, ### subtítulo, **negrita**, - lista)
                   <textarea id="admin-content" rows={18} value={content} onChange={(e) => setContent(e.target.value)} />
+                  <details className="admin-help">
+                    <summary>¿Cómo agrego preguntas para el repaso con NOVA?</summary>
+                    <p className="muted small">Al final de la lección escribe un título «### Preguntas» y una pregunta por línea. Separa las opciones con «|» y marca la correcta con un asterisco (*). La línea con «&gt;» es la explicación que NOVA da cuando el estudiante se equivoca (opcional):</p>
+                    <pre>{`### Preguntas
+- ¿Qué es una variable? | Un espacio para guardar datos* | Un tipo de computador | Un error del programa
+  > Explicación: una variable guarda un valor que puede cambiar.`}</pre>
+                  </details>
                 </label>
                 <div className="row">
                   <button className="btn" onClick={save}>Guardar tema</button>

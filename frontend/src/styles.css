@@ -507,3 +507,23 @@ button.nav-avatar[aria-expanded="true"] .user-avatar { border-color: var(--indig
   body.printing-certificate .cert-page { padding: 0 !important; max-width: none !important; }
   body.printing-certificate .certificate { width: 297mm; height: 210mm; max-width: none; border-radius: 0; box-shadow: none; padding: 8mm; aspect-ratio: auto; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+/* ---------- Repaso de cursos con NOVA ---------- */
+.class-tabs { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.review-pick { display: grid; gap: 10px; }
+.review-pick h3 { margin: 0; }
+.review-modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.review-module { display: flex; gap: 12px; align-items: center; text-align: left; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg-2); color: var(--text); cursor: pointer; font: inherit; }
+.review-module:hover:not(:disabled) { border-color: var(--indigo); }
+.review-module:disabled { opacity: .55; cursor: not-allowed; }
+.review-module > span:last-child { display: grid; gap: 2px; }
+.mod-num { flex: none; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: var(--indigo-2); font-weight: 700; }
+.review-options button { text-align: left; }
+.options button.wrong { border-color: var(--danger); background: rgba(255,107,129,.12); }
+.nova-ok { color: var(--ok); font-weight: 700; text-align: center; margin: 0; }
+.nova-bad { color: var(--gold); font-weight: 700; text-align: center; margin: 0; }
+.review-tips { margin: 6px 0 0; padding-left: 18px; }
+.class-type textarea { flex: 1 1 100%; font: 1rem var(--font); color: var(--text); background: var(--bg-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; resize: vertical; }
+.admin-help { margin-top: 8px; }
+.admin-help summary { cursor: pointer; color: var(--silver); font-size: .9rem; }
+.admin-help pre { white-space: pre-wrap; background: var(--bg-2); padding: 10px; border-radius: 10px; font-size: .8rem; }

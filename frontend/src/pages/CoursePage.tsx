@@ -114,11 +114,9 @@ export function CoursePage() {
                 {course.progress.percent < 100 ? "Certificado al completar el 100%" : "Obtener certificado"}
               </button>
             )}
-            {course.lang && (
-              <Link className="btn ghost block" to={`/clase?idioma=${course.slug}`}>
-                {course.lang === "lsc" ? "Practicar señas con la cámara" : "Clase de tú a tú con NOVA"}
-              </Link>
-            )}
+            <Link className="btn ghost block" to={course.lang ? `/clase?idioma=${course.slug}` : `/clase?curso=${course.slug}`}>
+              {course.lang === "lsc" ? "Practicar señas con la cámara" : course.lang ? "Clase de tú a tú con NOVA" : "Repaso de tú a tú con NOVA"}
+            </Link>
             <button className="btn ghost block" onClick={() => openNova(`Cuéntame del curso ${course.title}`)}>
               Pregúntale a NOVA por este curso
             </button>

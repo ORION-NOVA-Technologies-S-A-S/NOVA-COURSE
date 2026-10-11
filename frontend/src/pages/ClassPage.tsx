@@ -7,7 +7,8 @@ import { LSC_WORDS, randomTurns, SCENARIOS, similarity, type Scenario, type Turn
 import { PHRASES, SPANISH } from "../idiomas/frases";
 import { avatarState } from "../nova/avatarState";
 import { NovaAvatar } from "../nova/NovaAvatar";
-import { hasMic, hasVoiceFor, listen, speakIn, stopSpeech } from "../nova/voice";
+import { hasMic, hasVoiceFor, listen, speak, speakIn, stopSpeech } from "../nova/voice";
+import { ReviewClass } from "./ReviewClass";
 
 const RTL = ["ar", "he", "fa"];
 
@@ -16,13 +17,22 @@ export function ClassPage() {
   const { user, loading } = useAuth();
   const [params] = useSearchParams();
   const [langs, setLangs] = useState<CourseSummary[] | null>(null);
+  const [others, setOthers] = useState<CourseSummary[] | null>(null);
   const [slug, setSlug] = useState(params.get("idioma") ?? "");
+  const [tab, setTab] = useState<"idiomas" | "cursos">(params.get("curso") ? "cursos" : "idiomas");
+  const [courseSlug, setCourseSlug] = useState(params.get("curso") ?? "");
   const [scenario, setScenario] = useState<Scenario | null>(null);
 
   useEffect(() => {
     listCourses()
-      .then((all) => setLangs(all.filter((c) => c.lang && (PHRASES[c.lang] || c.lang === "lsc"))))
-      .catch(() => setLangs([]));
+      .then((all) => {
+        setLangs(all.filter((c) => c.lang && (PHRASES[c.lang] || c.lang === "lsc")));
+        setOthers(all.filter((c) => !c.lang).sort((a, b) => a.title.localeCompare(b.title, "es")));
+      })
+      .catch(() => {
+        setLangs([]);
+        setOthers([]);
+      });
   }, []);
 
   useEffect(() => () => stopSpeech(), []);
@@ -31,10 +41,18 @@ export function ClassPage() {
   const fromLink = params.get("idioma") ?? "";
   useEffect(() => {
     if (fromLink) {
+      setTab("idiomas");
       setSlug(fromLink);
       setScenario(null);
     }
   }, [fromLink]);
+  const courseFromLink = params.get("curso") ?? "";
+  useEffect(() => {
+    if (courseFromLink) {
+      setTab("cursos");
+      setCourseSlug(courseFromLink);
+    }
+  }, [courseFromLink]);
 
   const course = langs?.find((c) => c.slug === slug);
 
@@ -42,11 +60,11 @@ export function ClassPage() {
 
   return (
     <section className="wrap section class-page">
-      <p className="eyebrow">Idiomas · de tú a tú</p>
+      <p className="eyebrow">De tú a tú con NOVA</p>
       <h1>Clase con NOVA</h1>
       <p className="lead muted">
-        Conversa con NOVA en el idioma que estudias: ella te habla, tú le respondes en voz alta y te corrige al momento.
-        Enciende la cámara para verte mientras pronuncias, como frente a un espejo.
+        NOVA te pregunta, tú respondes en voz alta y, si te equivocas, te corrige al momento y te explica la respuesta correcta.
+        Enciende la cámara para verte mientras hablas, como frente a un espejo.
       </p>
 
       {!user ? (
@@ -60,6 +78,30 @@ export function ClassPage() {
         </div>
       ) : (
         <>
+          <div className="class-tabs" role="tablist">
+            <button role="tab" aria-selected={tab === "idiomas"} className={`chip-btn ${tab === "idiomas" ? "on" : ""}`} onClick={() => { stopSpeech(); setTab("idiomas"); }}>
+              🗣️ Idiomas
+            </button>
+            <button role="tab" aria-selected={tab === "cursos"} className={`chip-btn ${tab === "cursos" ? "on" : ""}`} onClick={() => { stopSpeech(); setTab("cursos"); }}>
+              📚 Repaso de cursos
+            </button>
+          </div>
+
+          {tab === "cursos" ? (
+            <>
+              <label className="class-select">
+                <span>Curso</span>
+                <select value={courseSlug} onChange={(e) => { stopSpeech(); setCourseSlug(e.target.value); }}>
+                  <option value="">Elige el curso…</option>
+                  {(others ?? []).map((c) => (
+                    <option key={c.slug} value={c.slug}>{c.title}</option>
+                  ))}
+                </select>
+              </label>
+              {courseSlug ? <ReviewClass slug={courseSlug} /> : others && <p className="muted">Elige uno de los {others.length} cursos para repasar con NOVA.</p>}
+            </>
+          ) : (
+          <>
           <label className="class-select">
             <span>Idioma</span>
             <select
@@ -104,6 +146,8 @@ export function ClassPage() {
             )
           ) : (
             langs && <p className="muted">Elige uno de los {langs.length} idiomas para empezar.</p>
+          )}
+          </>
           )}
         </>
       )}
@@ -164,7 +208,13 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
     const best = Math.max(...turn.expect.flatMap((k) => [similarity(heard, phrase(k).text), phrase(k).roman ? similarity(heard, phrase(k).roman!) : 0]));
     const status = best >= 0.8 ? "ok" : best >= 0.55 ? "almost" : "bad";
     setResult({ status, heard });
+    if (status !== "ok") {
+      // NOVA corrige en voz alta y pronuncia la respuesta correcta
+      const right = phrase(turn.expect[0]).text;
+      void speak(status === "almost" ? "¡Casi! Escucha cómo se dice." : "Te equivocaste. Escucha cómo se dice.").then(() => speakIn(right, lang, 0.85));
+    }
     if (status === "ok") {
+      if (turn.after === undefined) void speak("¡Muy bien!");
       if (!result || result.status !== "ok") setScore((s) => s + 1);
       avatarState.pulse("happy", 1400);
       if (turn.after !== undefined) {
@@ -352,7 +402,7 @@ function LscClass() {
 }
 
 /* ---------- Cámara (espejo) ---------- */
-function CameraMirror() {
+export function CameraMirror() {
   const video = useRef<HTMLVideoElement>(null);
   const stream = useRef<MediaStream | null>(null);
   const [on, setOn] = useState(false);
