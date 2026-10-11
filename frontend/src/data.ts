@@ -246,7 +246,7 @@ export async function removeAvatar(userId: string) {
 }
 
 /* ---------- Pagos con el link de Wompi (sin servidor) ---------- */
-export const DEFAULT_WOMPI_LINK = "https://checkout.wompi.co/l/VPOS_7MzSXf";
+export const DEFAULT_WOMPI_LINK = "https://checkout.wompi.co/l/4CnTOr";
 
 export async function getPaymentLink(): Promise<string> {
   const { data } = await supabase.from("settings").select("value").eq("key", "public_wompi_link_url").maybeSingle();

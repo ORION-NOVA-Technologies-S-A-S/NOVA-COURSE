@@ -25,8 +25,8 @@ create policy "ajustes publicos" on public.settings for select to anon, authenti
 grant select on public.settings to anon, authenticated;
 
 insert into public.settings (key, value) values
-  ('public_wompi_link_url', 'https://checkout.wompi.co/l/VPOS_7MzSXf'),
-  ('public_wompi_link_id',  'VPOS_7MzSXf'),
+  ('public_wompi_link_url', 'https://checkout.wompi.co/l/4CnTOr'),
+  ('public_wompi_link_id',  '4CnTOr'),
   ('wompi_api_url',         'https://production.wompi.co/v1')
 on conflict (key) do update set value = excluded.value;
 
