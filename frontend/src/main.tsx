@@ -12,6 +12,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Home } from "./pages/Home";
 import { LessonPage } from "./pages/LessonPage";
 import { PaymentResult } from "./pages/PaymentResult";
+import { ProfilePage } from "./pages/ProfilePage";
 import { Verify } from "./pages/Verify";
 import "./styles.css";
 
@@ -43,6 +44,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="nueva-clave" element={<NewPasswordPage />} />
             <Route path="admin" element={<Admin />} />
             <Route path="mi-aprendizaje" element={<Dashboard />} />
+            <Route path="perfil" element={<ProfilePage />} />
             <Route path="pago/resultado" element={<PaymentResult />} />
             <Route path="verificar" element={<Verify />} />
             <Route path="verificar/:code" element={<Verify />} />

@@ -30,6 +30,8 @@ En Supabase, entra al proyecto **NOVA COURSE** y ve a **SQL Editor → New query
 
 ## Actualizar una base ya creada
 
+6. Abre `supabase/04_perfil.sql` y pulsa **Run** (activa la foto de perfil). Debe mostrar `avatars | true`.
+
 Si ya tenías cargadas las partes 1 y 2, basta con ejecutar **02_cursos_parte3.sql** y **02_cursos_parte4.sql**. Todos los archivos se pueden volver a correr sin duplicar nada.
 No se pierden usuarios, avances, pagos ni certificados.
 

@@ -17,18 +17,26 @@ interface AuthState {
   register: (data: RegisterData) => Promise<boolean>;
   resetPassword: (email: string) => Promise<void>;
   logout: () => Promise<void>;
+  /** Vuelve a leer el perfil (después de editarlo o cambiar la foto). */
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
 
 async function loadUser(id: string, email: string): Promise<User> {
-  const { data } = await supabase.from("profiles").select("full_name, document_id, role").eq("id", id).maybeSingle();
+  // Con foto (04_perfil.sql); si ese archivo aún no se ha ejecutado, lee el perfil básico
+  let { data, error } = await supabase.from("profiles").select("full_name, document_id, role, avatar_url, phone, bio").eq("id", id).maybeSingle();
+  if (error) ({ data } = await supabase.from("profiles").select("full_name, document_id, role").eq("id", id).maybeSingle());
+  const p = (data ?? {}) as Partial<Record<string, string | null>>;
   return {
     id,
     email,
-    full_name: data?.full_name ?? "",
-    document_id: data?.document_id ?? null,
-    role: data?.role === "admin" ? "admin" : "student",
+    full_name: p.full_name ?? "",
+    document_id: p.document_id ?? null,
+    role: p.role === "admin" ? "admin" : "student",
+    avatar_url: p.avatar_url ?? null,
+    phone: p.phone ?? null,
+    bio: p.bio ?? null,
   };
 }
 
@@ -85,13 +93,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) throw error;
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) setUser(await loadUser(data.user.id, data.user.email ?? ""));
+  }, []);
+
   const logout = useCallback(async () => {
     await supabase.auth.signOut();
     setUser(null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, resetPassword, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, resetPassword, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

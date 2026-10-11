@@ -191,3 +191,56 @@ export async function adminSaveContent(topicId: number, content: string, videoUr
 export async function adminSavePrice(slug: string, price: number) {
   check(await supabase.from("courses").update({ price_cop: price }).eq("slug", slug).select("slug").single());
 }
+
+/* ---------- Perfil ---------- */
+export async function updateProfile(userId: string, fields: { full_name: string; document_id: string | null; phone: string | null; bio: string | null }) {
+  const { error } = await supabase.from("profiles").update(fields).eq("id", userId);
+  if (error) throw error;
+}
+
+/** Recorta la foto al centro en un cuadrado de 400 px (JPEG liviano) antes de subirla. */
+async function squareJpeg(file: File, size = 400): Promise<Blob> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = () => reject(new Error("No pude leer esa imagen. Prueba con una foto JPG o PNG."));
+      i.src = url;
+    });
+    const side = Math.min(img.naturalWidth, img.naturalHeight);
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("Tu navegador no pudo procesar la foto.");
+    ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, size, size);
+    return await new Promise<Blob>((resolve, reject) =>
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("No pude preparar la foto."))), "image/jpeg", 0.88),
+    );
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+/** Sube la foto de perfil a la carpeta propia del usuario y guarda su dirección en el perfil. */
+export async function uploadAvatar(userId: string, file: File): Promise<string> {
+  if (!file.type.startsWith("image/")) throw new Error("Elige un archivo de imagen (JPG, PNG o WEBP).");
+  if (file.size > 15 * 1024 * 1024) throw new Error("La foto pesa más de 15 MB. Elige una más liviana.");
+  const blob = await squareJpeg(file);
+  const path = `${userId}/avatar.jpg`;
+  const { error } = await supabase.storage.from("avatars").upload(path, blob, { upsert: true, contentType: "image/jpeg", cacheControl: "3600" });
+  if (error) {
+    if (/bucket not found/i.test(error.message)) throw new Error("Falta activar las fotos: ejecuta el archivo 04_perfil.sql en Supabase.");
+    throw error;
+  }
+  const url = `${supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
+  const { error: e2 } = await supabase.from("profiles").update({ avatar_url: url }).eq("id", userId);
+  if (e2) throw e2;
+  return url;
+}
+
+export async function removeAvatar(userId: string) {
+  await supabase.storage.from("avatars").remove([`${userId}/avatar.jpg`]);
+  const { error } = await supabase.from("profiles").update({ avatar_url: null }).eq("id", userId);
+  if (error) throw error;
+}

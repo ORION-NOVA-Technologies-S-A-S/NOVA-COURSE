@@ -4,6 +4,9 @@ export interface User {
   email: string;
   document_id: string | null;
   role: "student" | "admin";
+  avatar_url: string | null;
+  phone: string | null;
+  bio: string | null;
 }
 
 export interface CourseSummary {

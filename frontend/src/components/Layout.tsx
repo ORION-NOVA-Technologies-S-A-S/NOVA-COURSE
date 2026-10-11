@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from "react-router-dom";
+import { UserAvatar } from "../pages/ProfilePage";
 import { useAuth } from "../auth";
 import { supabaseConfigured } from "../supabase";
 import { NovaAvatarDefs } from "../nova/NovaAvatar";
@@ -17,7 +18,7 @@ export function Logo() {
 }
 
 export function Layout() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   return (
     <>
       <header className="topbar">
@@ -27,16 +28,15 @@ export function Layout() {
             <NavLink to="/cursos">Cursos</NavLink>
             <NavLink to="/clase">Clase con NOVA</NavLink>
             <NavLink to="/verificar">Verificar</NavLink>
-            {user ? (
-              <>
-                <NavLink to="/mi-aprendizaje">Mi aprendizaje</NavLink>
-                {user.role === "admin" && <NavLink to="/admin">Admin</NavLink>}
-                <button className="btn ghost sm" onClick={() => void logout()}>Salir</button>
-              </>
-            ) : (
-              <Link className="btn sm" to="/ingresar">Ingresar</Link>
-            )}
+            {user && <NavLink to="/mi-aprendizaje">Mi aprendizaje</NavLink>}
           </nav>
+          {user ? (
+            <Link to="/perfil" className="nav-avatar" aria-label={user.role === "admin" ? "Mi perfil y panel de administrador" : "Mi perfil"} title="Mi perfil">
+              <UserAvatar name={user.full_name} url={user.avatar_url} size={34} />
+            </Link>
+          ) : (
+            <Link className="btn sm" to="/ingresar">Ingresar</Link>
+          )}
         </div>
       </header>
       {!supabaseConfigured && (
