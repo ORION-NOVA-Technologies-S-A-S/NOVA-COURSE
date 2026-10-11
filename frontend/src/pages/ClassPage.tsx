@@ -3,7 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useAuth } from "../auth";
 import { listCourses } from "../data";
 import type { CourseSummary } from "../types";
-import { LSC_WORDS, randomTurns, SCENARIOS, similarity, type Scenario, type Turn } from "../idiomas/clase";
+import { LSC_WORDS, normalize, randomTurns, SCENARIOS, similarity, type Scenario, type Turn } from "../idiomas/clase";
 import { PHRASES, SPANISH } from "../idiomas/frases";
 import { avatarState } from "../nova/avatarState";
 import { NovaAvatar } from "../nova/NovaAvatar";
@@ -207,7 +207,9 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
     if (!heard.trim() || !turn) return;
     setNotice("");
     // También vale escribir la pronunciación (por ejemplo, pinyin «wo hen hao»)
-    const best = Math.max(...turn.expect.flatMap((k) => [similarity(heard, phrase(k).text), phrase(k).roman ? similarity(heard, phrase(k).roman!) : 0]));
+    // Los números también valen en cifras: el reconocimiento de voz suele escribir «2» en vez de «two»
+    const asDigit = (k: number) => (k >= 20 && k <= 29 && normalize(heard).replace(/[^0-9]/g, "") === String(k - 19) ? 1 : 0);
+    const best = Math.max(...turn.expect.flatMap((k) => [similarity(heard, phrase(k).text), phrase(k).roman ? similarity(heard, phrase(k).roman!) : 0, asDigit(k)]));
     const status = best >= 0.8 ? "ok" : best >= 0.55 ? "almost" : "bad";
     setResult({ status, heard });
     if (status !== "ok") {
@@ -354,9 +356,11 @@ function Conversation({ lang, languageName, scenario, onExit }: { lang: string; 
 
             <div className="practice-nav">
               <button className="btn ghost sm" onClick={onExit}>← Otras conversaciones</button>
-              <button className="btn sm" onClick={() => setStep((s) => s + 1)}>
-                {result?.status === "ok" ? "Siguiente →" : "Saltar →"}
-              </button>
+              {result?.status === "ok" ? (
+                <button className="btn sm" onClick={() => setStep((s) => s + 1)}>Siguiente →</button>
+              ) : (
+                <span className="muted small">Responde bien para continuar</span>
+              )}
             </div>
           </>
         )}

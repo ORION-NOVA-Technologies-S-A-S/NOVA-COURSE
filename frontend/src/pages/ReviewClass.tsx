@@ -94,6 +94,7 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
   const [tries, setTries] = useState(0);
   const [wrongPicks, setWrongPicks] = useState<number[]>([]);
   const [retry, setRetry] = useState<Outcome | null>(null);
+  const [mustPick, setMustPick] = useState(false);
   const q = questions[step];
   const done = step >= questions.length;
   const lessonOf = useMemo(() => new Map(course.modules.flatMap((m) => m.topics.map((t) => [t.id, m.unlocked] as const))), [course]);
@@ -107,6 +108,7 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
     setTries(0);
     setWrongPicks([]);
     setRetry(null);
+    setMustPick(false);
     if (done) {
       avatarState.pulse("happy", 1500);
       avatarState.pulse("wave", 2500);
@@ -142,16 +144,29 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
     return n;
   };
 
+  /** NOVA muestra la correcta y el estudiante debe elegirla para seguir. */
   const revealChoice = () => {
     if (q.kind !== "choice") return;
-    finish(false, `La respuesta correcta es la ${LETTERS[q.correct]}: «${q.options[q.correct]}». ${q.explanation}`);
+    setMustPick(true);
+    const text = `La respuesta correcta es la ${LETTERS[q.correct]}: «${q.options[q.correct]}». ${q.explanation} Ahora elígela tú para continuar.`;
+    setRetry({ ok: false, text });
+    void speak(text);
   };
 
   const answerChoice = (i: number) => {
     if (outcome || q.kind !== "choice" || wrongPicks.includes(i)) return;
     setPicked(i);
     const cq = q as ChoiceQuestion;
-    if (i === cq.correct) return finish(true, `${tries === 0 ? "¡Correcto!" : "¡Ahora sí, correcto!"} ${cq.explanation}`);
+    if (i === cq.correct) {
+      if (mustPick) {
+        setOutcome({ ok: true, text: "¡Eso es! Ya la tienes. Repasa este tema para la próxima." });
+        setRetry(null);
+        avatarState.pulse("happy", 1200);
+        void speak("¡Eso es! Ya la tienes.");
+        return;
+      }
+      return finish(true, `${tries === 0 ? "¡Correcto!" : "¡Ahora sí, correcto!"} ${cq.explanation}`);
+    }
     setWrongPicks((w) => [...w, i]);
     const n = wrong("Te equivocaste. Piénsalo otra vez y vuelve a intentarlo para mejorar.");
     if (n >= 2) revealChoice();
@@ -238,8 +253,8 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
                 {q.options.map((o, i) => (
                   <button
                     key={i}
-                    disabled={Boolean(outcome) || wrongPicks.includes(i)}
-                    className={outcome ? (i === q.correct ? "right" : wrongPicks.includes(i) || i === picked ? "wrong" : "") : wrongPicks.includes(i) ? "wrong" : ""}
+                    disabled={Boolean(outcome) || wrongPicks.includes(i) || (mustPick && i !== q.correct)}
+                    className={outcome || mustPick ? (i === q.correct ? "right" : wrongPicks.includes(i) || i === picked ? "wrong" : "") : wrongPicks.includes(i) ? "wrong" : ""}
                     onClick={() => answerChoice(i)}
                   >
                     <b>{LETTERS[i]}.</b> {o}
@@ -266,7 +281,7 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
                 </button>
               )}
               {!outcome && <button className="btn ghost sm" onClick={() => void speak(q.prompt)}>Repetir la pregunta</button>}
-              {!outcome && tries > 0 && q.kind === "choice" && (
+              {!outcome && !mustPick && tries > 0 && q.kind === "choice" && (
                 <button className="btn ghost sm" onClick={revealChoice}>Ver la respuesta</button>
               )}
             </div>
@@ -294,7 +309,11 @@ function Quiz({ course, moduleTitle, questions, onExit, onRestart }: { course: C
 
             <div className="practice-nav">
               <button className="btn ghost sm" onClick={onExit}>← Otros módulos</button>
-              <button className="btn sm" onClick={() => setStep((s) => s + 1)}>{outcome ? "Siguiente →" : "Saltar →"}</button>
+              {outcome ? (
+                <button className="btn sm" onClick={() => setStep((s) => s + 1)}>Siguiente →</button>
+              ) : (
+                <span className="muted small">Responde bien para continuar</span>
+              )}
             </div>
           </>
         )}
