@@ -68,7 +68,7 @@ export function WompiLinkPay({ slug, title, price, initialTx = "", onDone, onClo
 
       <ol className="pay-steps">
         <li>
-          <span>Abre Wompi y escribe el valor exacto: <b>{formatCOP(price)}</b>.</span>
+          <span>Abre Wompi y paga <b>{formatCOP(price)}</b> con Nequi, PSE, tarjeta o Bancolombia. Al terminar, Wompi te devuelve aquí y tu curso se abre solo.</span>
           <a className="btn block" href={link} target="_blank" rel="noopener noreferrer" onClick={() => {
               setOpened(true);
               rememberPending(slug);
@@ -77,7 +77,7 @@ export function WompiLinkPay({ slug, title, price, initialTx = "", onDone, onClo
           </a>
         </li>
         <li>
-          <span>Al terminar, copia el <b>número de la transacción</b> que aparece en el comprobante de Wompi (también te llega al correo).</span>
+          <span>Si no volviste automáticamente, copia el <b>número de la transacción</b> del comprobante de Wompi (también te llega al correo) y pégalo aquí:</span>
         </li>
         <li>
           <form className="pay-form" onSubmit={confirm}>
