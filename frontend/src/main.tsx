@@ -6,6 +6,7 @@ import { Layout } from "./components/Layout";
 import { Admin } from "./pages/Admin";
 import { ForgotPasswordPage, LoginPage, NewPasswordPage, RegisterPage } from "./pages/AuthPages";
 import { Catalog } from "./pages/Catalog";
+import { CertificatePage } from "./pages/CertificatePage";
 import { ClassPage } from "./pages/ClassPage";
 import { CoursePage } from "./pages/CoursePage";
 import { Dashboard } from "./pages/Dashboard";
@@ -61,6 +62,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="pago/resultado" element={<PaymentResult />} />
             <Route path="verificar" element={<Verify />} />
             <Route path="verificar/:code" element={<Verify />} />
+            <Route path="certificado/:code" element={<CertificatePage />} />
             <Route path="*" element={<section className="wrap section"><h1>Página no encontrada</h1></section>} />
           </Route>
         </Routes>

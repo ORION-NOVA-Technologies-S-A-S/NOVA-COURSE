@@ -54,7 +54,9 @@ export async function backend<T>(path: string, options: RequestInit = {}): Promi
   return res.json() as Promise<T>;
 }
 
-export const certificatePdfUrl = (code: string) => `${BASE}/certificates/${code}/pdf`;
+/** PDF del certificado: con el servidor publicado lo genera Python; si no, el navegador lo arma en #/certificado/CÓDIGO. */
+export const certificatePdfUrl = (code: string) =>
+  apiConfigured ? `${BASE}/certificates/${code}/pdf` : `#/certificado/${encodeURIComponent(code)}`;
 
 export const formatCOP = (value: number) =>
   new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(value);

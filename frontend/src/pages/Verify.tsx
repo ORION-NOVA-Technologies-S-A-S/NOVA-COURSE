@@ -1,6 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { certificatePdfUrl } from "../api";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { verifyCertificate, type CertInfo } from "../data";
 
 export function Verify() {
@@ -40,7 +39,8 @@ export function Verify() {
           <p className="muted">
             Emitido el {new Date(info.issued_at).toLocaleDateString("es-CO", { dateStyle: "long" })} por ORION NOVA TECHNOLOGIES
           </p>
-          <a className="btn ghost sm" href={certificatePdfUrl(info.code)} target="_blank" rel="noreferrer">Ver PDF</a>
+          <p className="muted small">Código: {info.code}</p>
+          <Link className="btn sm" to={`/certificado/${info.code}`}>Ver certificado y descargar PDF</Link>
         </div>
       )}
       {notFound && <p className="error">No existe un certificado con el código {code}.</p>}
