@@ -401,6 +401,14 @@ export async function reply(input: string, user: User | null): Promise<NovaReply
     };
   }
 
+  // Clase de tú a tú (idiomas con cámara)
+  if (has(t, "clase con nova", "de tu a tu", "camara", "conversar", "practicar conversacion", "practicar hablando", "clase de idiomas")) {
+    return {
+      text: "En «Clase con NOVA» conversamos en el idioma que estudias: yo te hablo, tú me respondes en voz alta y te corrijo al momento. Puedes encender la cámara para verte mientras pronuncias; tu video no se graba ni se envía.",
+      actions: [{ label: "Ir a la clase con NOVA", to: "/clase" }],
+    };
+  }
+
   // Gratis
   if (has(t, "gratis", "gratuito", "free", "sin pagar", "sin costo")) {
     return {

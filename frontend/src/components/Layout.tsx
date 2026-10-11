@@ -25,6 +25,7 @@ export function Layout() {
           <Logo />
           <nav className="nav">
             <NavLink to="/cursos">Cursos</NavLink>
+            <NavLink to="/clase">Clase con NOVA</NavLink>
             <NavLink to="/verificar">Verificar</NavLink>
             {user ? (
               <>

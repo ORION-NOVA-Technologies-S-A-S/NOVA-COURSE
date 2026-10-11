@@ -6,6 +6,7 @@ import { Layout } from "./components/Layout";
 import { Admin } from "./pages/Admin";
 import { ForgotPasswordPage, LoginPage, NewPasswordPage, RegisterPage } from "./pages/AuthPages";
 import { Catalog } from "./pages/Catalog";
+import { ClassPage } from "./pages/ClassPage";
 import { CoursePage } from "./pages/CoursePage";
 import { Dashboard } from "./pages/Dashboard";
 import { Home } from "./pages/Home";
@@ -35,6 +36,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="cursos" element={<Catalog />} />
             <Route path="cursos/:slug" element={<CoursePage />} />
             <Route path="leccion/:id" element={<LessonPage />} />
+            <Route path="clase" element={<ClassPage />} />
             <Route path="ingresar" element={<LoginPage />} />
             <Route path="registro" element={<RegisterPage />} />
             <Route path="recuperar" element={<ForgotPasswordPage />} />
