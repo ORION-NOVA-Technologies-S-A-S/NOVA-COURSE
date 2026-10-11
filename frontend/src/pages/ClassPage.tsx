@@ -159,7 +159,10 @@ export function ClassPage() {
 type Result = { status: "ok" | "almost" | "bad"; heard: string } | null;
 
 function Conversation({ lang, languageName, scenario, onExit }: { lang: string; languageName: string; scenario: Scenario; onExit: () => void }) {
-  const turns: Turn[] = useMemo(() => (scenario.turns === "random" ? randomTurns() : scenario.turns), [scenario]);
+  const turns: Turn[] = useMemo(
+    () => (scenario.turns === "random" ? randomTurns(SPANISH.length, 8) : scenario.turns === "random-all" ? randomTurns(SPANISH.length, 10) : scenario.turns),
+    [scenario],
+  );
   const [step, setStep] = useState(0);
   const [result, setResult] = useState<Result>(null);
   const [revealed, setRevealed] = useState(false);

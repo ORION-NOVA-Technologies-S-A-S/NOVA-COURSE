@@ -1,5 +1,5 @@
 /**
- * Clases "de tú a tú" con NOVA: conversaciones guiadas con las 40 frases base de cada idioma.
+ * Clases "de tú a tú" con NOVA: conversaciones guiadas con las 60 frases base de cada idioma.
  * Los números son posiciones en SPANISH / PHRASES (ver frases.ts).
  */
 
@@ -19,7 +19,7 @@ export interface Scenario {
   title: string;
   level: string;
   description: string;
-  turns: Turn[] | "random";
+  turns: Turn[] | "random" | "random-all";
 }
 
 export const SCENARIOS: Scenario[] = [
@@ -92,6 +92,84 @@ export const SCENARIOS: Scenario[] = [
     ],
   },
   {
+    id: "dias",
+    title: "Días de la semana",
+    level: "Módulo 6",
+    description: "NOVA dice un día y tú dices el que sigue.",
+    turns: [
+      { nova: 40, tip: "NOVA dice «lunes». Di el día que sigue.", expect: [41] },
+      { nova: 41, tip: "NOVA dice «martes». Di el día que sigue.", expect: [42] },
+      { nova: 42, tip: "NOVA dice «miércoles». Di el día que sigue.", expect: [43] },
+      { nova: 43, tip: "NOVA dice «jueves». Di el día que sigue.", expect: [44] },
+      { nova: 44, tip: "NOVA dice «viernes». Di el día que sigue.", expect: [45] },
+      { nova: 45, tip: "NOVA dice «sábado». Di el día que sigue.", expect: [46] },
+    ],
+  },
+  {
+    id: "colores",
+    title: "Colores",
+    level: "Módulo 6",
+    description: "NOVA te pregunta cómo se dicen los colores.",
+    turns: [
+      { tip: "¿Cómo se dice «rojo»?", expect: [47] },
+      { tip: "¿Cómo se dice «azul»?", expect: [48] },
+      { tip: "¿Cómo se dice «verde»?", expect: [49] },
+      { tip: "¿Cómo se dice «blanco»?", expect: [50] },
+      { tip: "¿Cómo se dice «negro»?", expect: [51] },
+    ],
+  },
+  {
+    id: "restaurante",
+    title: "En el restaurante",
+    level: "Módulo 7",
+    description: "Di que tienes hambre, pide agua y pide la cuenta.",
+    turns: [
+      { nova: 1, tip: "El mesero (NOVA) te da los buenos días. Respóndele.", expect: [1, 0] },
+      { tip: "Dile que tienes hambre.", expect: [56] },
+      { tip: "Pide agua: di «agua».", expect: [34] },
+      { tip: "Agrega «por favor».", expect: [4] },
+      { tip: "Ya comiste. Pide la cuenta.", expect: [58] },
+      { tip: "Da las gracias.", expect: [5], after: 6 },
+      { tip: "Despídete.", expect: [3, 19] },
+    ],
+  },
+  {
+    id: "viaje",
+    title: "De viaje",
+    level: "Módulo 8",
+    description: "Llegas de noche a otra ciudad y buscas tu hotel.",
+    turns: [
+      { nova: 2, tip: "NOVA te dice «buenas noches». Respóndele igual.", expect: [2] },
+      { tip: "Dile que no entiendes.", expect: [17] },
+      { tip: "Pregunta dónde está el hotel.", expect: [59] },
+      { tip: "Pregunta cuánto cuesta.", expect: [38], after: 26 },
+      { tip: "NOVA te dijo el precio (siete). Dile que estás cansado.", expect: [57] },
+      { tip: "Da las gracias.", expect: [5], after: 6 },
+      { tip: "Despídete con «hasta luego».", expect: [19] },
+    ],
+  },
+  {
+    id: "tiempo",
+    title: "Hoy, mañana y ayer",
+    level: "Módulo 9",
+    description: "Pregunta la hora y habla de los días.",
+    turns: [
+      { tip: "Pregunta qué hora es.", expect: [55], after: 22 },
+      { tip: "¿Cómo se dice «hoy»?", expect: [52] },
+      { tip: "¿Cómo se dice «mañana» (el día siguiente)?", expect: [53] },
+      { tip: "¿Cómo se dice «ayer»?", expect: [54] },
+      { nova: 44, tip: "NOVA dice «viernes». Di el día que sigue.", expect: [45] },
+      { nova: 46, tip: "NOVA dice «domingo». ¿Qué día empieza la semana? Di «lunes».", expect: [40] },
+    ],
+  },
+  {
+    id: "repaso-general",
+    title: "Repaso general",
+    level: "Módulo 10",
+    description: "Diez frases al azar de todos los temas: repítelas como NOVA.",
+    turns: "random-all",
+  },
+  {
     id: "repite",
     title: "Repite como NOVA",
     level: "Pronunciación",
@@ -101,7 +179,7 @@ export const SCENARIOS: Scenario[] = [
 ];
 
 /** Turnos de "Repite como NOVA": 8 frases distintas al azar. */
-export function randomTurns(total = 40, n = 8): Turn[] {
+export function randomTurns(total = 60, n = 8): Turn[] {
   const idx = Array.from({ length: total }, (_, i) => i);
   for (let i = idx.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -112,7 +190,9 @@ export function randomTurns(total = 40, n = 8): Turn[] {
 
 /** Palabras para practicar en Lengua de Señas Colombiana frente a la cámara. */
 export const LSC_WORDS = ["Hola", "Gracias", "Por favor", "Adiós", "Buenos días", "¿Cómo estás?", "Mucho gusto", "Familia", "Madre", "Padre",
-  "Amigo", "Casa", "Agua", "Comer", "Sí", "No", "Uno", "Dos", "Tres", "Colombia"];
+  "Amigo", "Casa", "Agua", "Comer", "Sí", "No", "Uno", "Dos", "Tres", "Colombia",
+  "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo", "Rojo", "Azul", "Verde",
+  "Hoy", "Mañana", "Ayer", "Hambre", "Cansado", "Restaurante", "Hotel", "Cuánto cuesta", "Baño", "No entiendo"];
 
 /* ---------- Comparar lo que dijo el estudiante ---------- */
 export const normalize = (s: string) =>

@@ -21,10 +21,12 @@ export const CATEGORIES = [
   { name: "Conversación básica", from: 10, to: 20 },
   { name: "Números del 1 al 10", from: 20, to: 30 },
   { name: "Familia, comida y lugares", from: 30, to: 40 },
+  { name: "Días y colores", from: 40, to: 52 },
+  { name: "Tiempo, restaurante y viaje", from: 52, to: 60 },
 ];
 
 /** Qué frases se practican en cada módulo (los módulos 6-10 usan las frases que escriba el administrador). */
-export const MODULE_CATEGORIES: Record<number, number[]> = { 1: [0, 1], 2: [2, 3], 3: [3, 2], 4: [0, 1, 2, 3], 5: [0, 1, 2, 3] };
+export const MODULE_CATEGORIES: Record<number, number[]> = { 1: [0, 1], 2: [2, 3], 3: [3, 2, 4], 4: [4, 5], 5: [0, 1, 2, 3, 4, 5] };
 
 export const PHRASES: Record<string, string[]> = {
   "en-US": ["Hello", "Good morning", "Good night", "Goodbye", "Please", "Thank you", "You're welcome", "I'm sorry", "Yes", "No",
@@ -180,3 +182,8 @@ export function phrasesFromContent(content: string): Phrase[] {
   }
   return out;
 }
+
+/* Frases 40 a 59 (días, colores, tiempo, restaurante y viaje) */
+import { PHRASES_EXTRA, SPANISH_EXTRA } from "./frases_extra";
+SPANISH.push(...SPANISH_EXTRA);
+for (const [lang, extra] of Object.entries(PHRASES_EXTRA)) if (PHRASES[lang] && PHRASES[lang].length === 40) PHRASES[lang].push(...extra);

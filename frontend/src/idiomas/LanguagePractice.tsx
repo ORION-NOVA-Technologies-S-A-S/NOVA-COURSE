@@ -28,7 +28,7 @@ export function LanguagePractice({ lang, languageName, modulePosition, content }
   const custom = useMemo(() => phrasesFromContent(content), [content]);
   const base = useMemo(() => {
     const cats = MODULE_CATEGORIES[modulePosition];
-    return cats ? phrasesFor(lang, cats) : phrasesFor(lang, [0, 1, 2, 3]);
+    return cats ? phrasesFor(lang, cats) : phrasesFor(lang, [0, 1, 2, 3, 4, 5]);
   }, [lang, modulePosition]);
   const phrases: Phrase[] = custom.length ? custom : base;
   const isReview = !custom.length && !MODULE_CATEGORIES[modulePosition];
