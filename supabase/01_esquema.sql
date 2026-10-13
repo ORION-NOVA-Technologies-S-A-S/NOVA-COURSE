@@ -111,8 +111,7 @@ create table if not exists public.certificates (
   student_name text not null,
   document_id  text,
   hours        smallint not null default 120,
-  issued_at    timestamptz not null default now(),
-  unique (user_id, course_id)
+  issued_at    timestamptz not null default now()
 );
 
 -- ---------- Actualización a 10 módulos (sirve para bases creadas con la versión anterior) ----------
@@ -121,7 +120,14 @@ alter table public.courses add column if not exists lang text;
 alter table public.courses alter column free_modules set default 5;
 alter table public.certificates alter column hours set default 120;
 alter table public.modules drop constraint if exists modules_position_check;
-alter table public.modules add constraint modules_position_check check (position between 1 and 10);
+alter table public.modules add constraint modules_position_check check (position between 1 and 12);
+-- Certificados por curso, por nivel (idiomas A1-C2) o por módulo (ver 06_niveles_y_certificados.sql)
+alter table public.certificates add column if not exists scope text not null default 'course';
+alter table public.certificates add column if not exists scope_key text not null default '';
+alter table public.certificates add column if not exists scope_label text;
+alter table public.certificates drop constraint if exists certificates_user_id_course_id_key;
+create unique index if not exists certificates_user_course_scope
+  on public.certificates (user_id, course_id, scope, scope_key);
 
 create index if not exists idx_modules_course on public.modules (course_id);
 create index if not exists idx_topics_module on public.topics (module_id);
@@ -234,7 +240,8 @@ language sql stable security definer set search_path = public as $$
            where tp.user_id = e.user_id and m.course_id = c.id),
          (select count(*) from public.topics t join public.modules m on m.id = t.module_id
            where m.course_id = c.id),
-         (select ce.code from public.certificates ce where ce.user_id = e.user_id and ce.course_id = c.id)
+         (select ce.code from public.certificates ce
+           where ce.user_id = e.user_id and ce.course_id = c.id and ce.scope = 'course')
   from public.enrollments e
   join public.courses c on c.id = e.course_id
   where e.user_id = auth.uid()
@@ -257,12 +264,12 @@ begin
   select id into v_course from public.courses where slug = p_course_slug;
   if v_course is null then raise exception 'Curso no encontrado'; end if;
 
-  select code into v_code from public.certificates where user_id = v_uid and course_id = v_course;
+  select code into v_code from public.certificates where user_id = v_uid and course_id = v_course and scope = 'course';
   if v_code is not null then return v_code; end if;
 
   select plan into v_plan from public.enrollments where user_id = v_uid and course_id = v_course;
   if coalesce(v_plan, '') <> 'premium' then
-    raise exception 'El certificado requiere el curso completo (módulos 6 a 10)';
+    raise exception 'El certificado del curso completo requiere desbloquear los módulos 6 en adelante';
   end if;
 
   select count(*) into v_total from public.topics t join public.modules m on m.id = t.module_id
@@ -288,10 +295,12 @@ begin
 end $$;
 
 -- Verificación pública de un certificado (cualquier persona o empresa)
-create or replace function public.verify_certificate(p_code text)
-returns table (code text, student text, course text, hours smallint, issued_at timestamptz)
+drop function if exists public.verify_certificate(text);
+create function public.verify_certificate(p_code text)
+returns table (code text, student text, course text, hours smallint, issued_at timestamptz,
+               scope text, scope_label text, course_slug text)
 language sql stable security definer set search_path = public as $$
-  select ce.code, ce.student_name, c.title, ce.hours, ce.issued_at
+  select ce.code, ce.student_name, c.title, ce.hours, ce.issued_at, ce.scope, ce.scope_label, c.slug
   from public.certificates ce join public.courses c on c.id = ce.course_id
   where ce.code = upper(trim(p_code));
 $$;

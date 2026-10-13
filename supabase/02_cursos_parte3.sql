@@ -1,7 +1,7 @@
 -- =====================================================================
 -- NOVA COURSE · Parte 3: datos, educación e ingeniería · 39 cursos · 10 módulos · 12 temas · módulos 1 a 5 gratis
 -- Pega este archivo en Supabase > SQL Editor y pulsa "Run" (después de 01_esquema.sql).
--- Orden: 01_esquema.sql, 02_cursos_parte1.sql, 02_cursos_parte2_idiomas.sql, 02_cursos_parte3.sql, 02_cursos_parte4.sql
+-- Orden: 01_esquema.sql, 06_niveles_y_certificados.sql (si tu base es anterior), 02_cursos_parte1.sql, 02_cursos_parte2_idiomas.sql, 02_cursos_parte3.sql, 02_cursos_parte4.sql
 -- No borra ni sobrescribe el contenido que ya hayas editado.
 -- Archivo generado por scripts/generar_sql_cursos.py
 -- =====================================================================
@@ -5165,7 +5165,7 @@ on conflict (topic_id) do nothing;
 
 commit;
 
--- Comprobación: al terminar las cuatro partes debe mostrar 168 | 1680 | 20160 | 20160 | 443
+-- Comprobación: al terminar las cuatro partes debe mostrar 168 | 1742 | 20904 | 20904 | 443
 select (select count(*) from public.courses) as cursos,
        (select count(*) from public.modules) as modulos,
        (select count(*) from public.topics) as temas,

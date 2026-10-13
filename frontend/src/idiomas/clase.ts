@@ -1,7 +1,9 @@
 /**
- * Clases "de tú a tú" con NOVA: conversaciones guiadas con las 60 frases base de cada idioma.
+ * Clases "de tú a tú" con NOVA: conversaciones guiadas por nivel (A1 a C2) con las 84 frases de cada idioma.
  * Los números son posiciones en SPANISH / PHRASES (ver frases.ts).
  */
+
+import { SPANISH_ADVANCED } from "./frases_avanzadas";
 
 export interface Turn {
   /** Frase que NOVA dice en el idioma (opcional). */
@@ -14,10 +16,18 @@ export interface Turn {
   after?: number;
 }
 
+export type Cefr = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+export const CEFR_LEVELS: Cefr[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
+export const CEFR_NAMES: Record<Cefr, string> = {
+  A1: "Básico", A2: "Básico", B1: "Intermedio", B2: "Intermedio", C1: "Avanzado", C2: "Avanzado",
+};
+
 export interface Scenario {
   id: string;
   title: string;
   level: string;
+  /** Nivel del Marco Común Europeo al que pertenece la clase. "libre" = práctica que no cuenta para el certificado. */
+  cefr: Cefr | "libre";
   description: string;
   turns: Turn[] | "random" | "random-all";
 }
@@ -25,6 +35,7 @@ export interface Scenario {
 export const SCENARIOS: Scenario[] = [
   {
     id: "saludar",
+    cefr: "A1",
     title: "Saludar",
     level: "Módulo 1",
     description: "NOVA te saluda y tú le respondes.",
@@ -38,6 +49,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "presentarte",
+    cefr: "A1",
     title: "Presentarte",
     level: "Módulos 2 y 3",
     description: "Di tu nombre, de dónde eres y si hablas español.",
@@ -51,6 +63,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "cafeteria",
+    cefr: "A2",
     title: "En la cafetería",
     level: "Módulos 4 y 5",
     description: "Pide un café, pregunta el precio y da las gracias.",
@@ -66,6 +79,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "numeros",
+    cefr: "A1",
     title: "Números",
     level: "Módulo 3",
     description: "NOVA dice un número y tú dices el que sigue.",
@@ -79,6 +93,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "familia",
+    cefr: "A1",
     title: "Familia y casa",
     level: "Módulos 4 y 5",
     description: "NOVA te pregunta cómo se dicen las palabras de todos los días.",
@@ -93,6 +108,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "dias",
+    cefr: "A1",
     title: "Días de la semana",
     level: "Módulo 6",
     description: "NOVA dice un día y tú dices el que sigue.",
@@ -107,6 +123,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "colores",
+    cefr: "A1",
     title: "Colores",
     level: "Módulo 6",
     description: "NOVA te pregunta cómo se dicen los colores.",
@@ -120,6 +137,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "restaurante",
+    cefr: "A2",
     title: "En el restaurante",
     level: "Módulo 7",
     description: "Di que tienes hambre, pide agua y pide la cuenta.",
@@ -135,6 +153,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "viaje",
+    cefr: "A2",
     title: "De viaje",
     level: "Módulo 8",
     description: "Llegas de noche a otra ciudad y buscas tu hotel.",
@@ -150,6 +169,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "tiempo",
+    cefr: "A2",
     title: "Hoy, mañana y ayer",
     level: "Módulo 9",
     description: "Pregunta la hora y habla de los días.",
@@ -164,6 +184,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "repaso-general",
+    cefr: "libre",
     title: "Repaso general",
     level: "Módulo 10",
     description: "Diez frases al azar de todos los temas: repítelas como NOVA.",
@@ -171,12 +192,45 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     id: "repite",
+    cefr: "libre",
     title: "Repite como NOVA",
     level: "Pronunciación",
     description: "NOVA dice frases al azar; tú las repites y te miras en la cámara.",
     turns: "random",
   },
 ];
+
+/* ---------- Niveles B1 a C2: frases 60 a 83 ---------- */
+const ADVANCED: { cefr: Cefr; title: string; from: number }[] = [
+  { cefr: "B1", title: "Contar y opinar", from: 60 },
+  { cefr: "B2", title: "En el trabajo", from: 66 },
+  { cefr: "C1", title: "Argumentar", from: 72 },
+  { cefr: "C2", title: "Matices y refranes", from: 78 },
+];
+for (const a of ADVANCED) {
+  const idx = [0, 1, 2, 3, 4, 5].map((i) => a.from + i);
+  SCENARIOS.push(
+    {
+      id: `${a.cefr.toLowerCase()}-di`,
+      cefr: a.cefr,
+      title: `${a.title}: ¿cómo dirías…?`,
+      level: `Nivel ${a.cefr}`,
+      description: "NOVA te da la frase en español y tú la dices en el idioma.",
+      turns: idx.map((k) => ({ tip: `¿Cómo dirías: «${SPANISH_ADVANCED[k - 60]}»?`, expect: [k] })),
+    },
+    {
+      id: `${a.cefr.toLowerCase()}-repite`,
+      cefr: a.cefr,
+      title: `${a.title}: repite como NOVA`,
+      level: `Nivel ${a.cefr}`,
+      description: "NOVA dice frases largas y tú las repites con buena pronunciación.",
+      turns: idx.map((k) => ({ nova: k, tip: "Escucha a NOVA y repite la frase completa.", expect: [k] })),
+    },
+  );
+}
+
+/** Clases que hay que aprobar para certificar cada nivel. */
+export const scenariosFor = (level: Cefr) => SCENARIOS.filter((s) => s.cefr === level);
 
 /** Turnos de "Repite como NOVA": 8 frases distintas al azar. */
 export function randomTurns(total = 60, n = 8): Turn[] {
@@ -193,6 +247,16 @@ export const LSC_WORDS = ["Hola", "Gracias", "Por favor", "Adiós", "Buenos día
   "Amigo", "Casa", "Agua", "Comer", "Sí", "No", "Uno", "Dos", "Tres", "Colombia",
   "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo", "Rojo", "Azul", "Verde",
   "Hoy", "Mañana", "Ayer", "Hambre", "Cansado", "Restaurante", "Hotel", "Cuánto cuesta", "Baño", "No entiendo"];
+
+/** Palabras de LSC por nivel: 10 por nivel, se aprueba con 7 o más bien hechas. */
+export const LSC_LEVEL_WORDS: Record<Cefr, string[]> = {
+  A1: ["Hola", "Gracias", "Por favor", "Adiós", "Buenos días", "Sí", "No", "Uno", "Dos", "Tres"],
+  A2: ["¿Cómo estás?", "Mucho gusto", "Familia", "Madre", "Padre", "Amigo", "Casa", "Agua", "Comer", "Colombia"],
+  B1: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo", "Hoy", "Mañana", "Ayer"],
+  B2: ["Rojo", "Azul", "Verde", "Hambre", "Cansado", "Restaurante", "Hotel", "Cuánto cuesta", "Baño", "No entiendo"],
+  C1: ["Trabajo", "Reunión", "Estudiar", "Universidad", "Médico", "Hospital", "Ayuda", "Emergencia", "Derecho", "Comunidad"],
+  C2: ["Opinión", "Acuerdo", "Desacuerdo", "Explicar", "Importante", "Cultura", "Sordo", "Oyente", "Intérprete", "Inclusión"],
+};
 
 /* ---------- Comparar lo que dijo el estudiante ---------- */
 export const normalize = (s: string) =>

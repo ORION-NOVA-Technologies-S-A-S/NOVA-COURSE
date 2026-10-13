@@ -25,11 +25,13 @@ def q(v: str) -> str:
 
 
 def build(COURSES, filename: str, header: str) -> None:
+    nmods = sorted({len(c["modules"]) for c in COURSES})
+    mods_txt = " o ".join(str(n) for n in nmods) + " módulos"
     lines = [
         "-- =====================================================================",
-        f"-- NOVA COURSE · {header} · {len(COURSES)} cursos · 10 módulos · 12 temas · módulos 1 a 5 gratis",
+        f"-- NOVA COURSE · {header} · {len(COURSES)} cursos · {mods_txt} · 12 temas · módulos 1 a 5 gratis",
         "-- Pega este archivo en Supabase > SQL Editor y pulsa \"Run\" (después de 01_esquema.sql).",
-        "-- Orden: 01_esquema.sql, 02_cursos_parte1.sql, 02_cursos_parte2_idiomas.sql, 02_cursos_parte3.sql, 02_cursos_parte4.sql",
+        "-- Orden: 01_esquema.sql, 06_niveles_y_certificados.sql (si tu base es anterior), 02_cursos_parte1.sql, 02_cursos_parte2_idiomas.sql, 02_cursos_parte3.sql, 02_cursos_parte4.sql",
         "-- No borra ni sobrescribe el contenido que ya hayas editado.",
         "-- Archivo generado por scripts/generar_sql_cursos.py",
         "-- =====================================================================",

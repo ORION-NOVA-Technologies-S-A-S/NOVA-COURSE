@@ -1,7 +1,7 @@
 """Cursos de idiomas de NOVA COURSE.
 
-30 idiomas con niveles A1 a C1 del Marco Común Europeo de Referencia (MCER) en 10 módulos:
-módulos 1-5 (A1-A2) gratis, módulos 6-10 (B1-C1) de pago con certificado.
+30 idiomas con niveles A1 a C2 del Marco Común Europeo de Referencia (MCER) en 12 módulos:
+módulos 1-5 (A1-A2) gratis, módulos 6-12 (B1-C2) de pago con certificado.
 Además, la Lengua de Señas Colombiana (LSC).
 La web asigna a cada tema una habilidad (vocabulario, gramática, escucha, pronunciación, lectura,
 escritura, conversación o cultura) a partir de su título y la muestra como insignia.
@@ -42,7 +42,7 @@ LANGUAGES = [
 ]
 
 LEVEL_SUMMARY = (
-    "Aprende {name} desde cero hasta el nivel C1 del Marco Común Europeo: vocabulario, gramática, "
+    "Aprende {name} desde cero hasta el nivel C2 del Marco Común Europeo: vocabulario, gramática, "
     "escucha, pronunciación con la voz de NOVA, lectura, escritura y conversación. Módulos 1 a 5 (A1-A2) gratis."
 )
 
@@ -106,7 +106,15 @@ def language_modules(name: str, script: str, exam: str, script_topics: list[str]
         ("C1 · Dominio del idioma", ["Textos académicos", "Argumentación avanzada", "Lenguaje especializado", "Traducción e interpretación básica",
                                      f"Exámenes oficiales: {exam}", "Estrategias para el examen", "Comprensión auditiva C1", "Comprensión lectora C1",
                                      "Expresión escrita C1", "Expresión oral C1", "Plan para seguir aprendiendo",
-                                     f"Proyecto final: exposición oral y ensayo en {n}"]),
+                                     f"Proyecto integrador C1: exposición oral y ensayo en {n}"]),
+        ("C2 · Maestría del idioma", ["Matices y precisión del vocabulario", "Expresiones idiomáticas avanzadas", "Ironía, humor y sobrentendidos",
+                                      "Registro literario y académico", f"Variedades sociales del {n}", "Gramática de alto nivel",
+                                      "Escucha: debates y conferencias reales", "Lectura: literatura y prensa especializada", "Escritura: artículo de opinión",
+                                      "Expresión oral: improvisación", "Mediación entre idiomas", "Conversación con hablantes nativos"]),
+        ("C2 · Certificación y proyecto final", [f"Examen de nivel C2: {exam}", "Estrategias para el examen C2", "Simulacro de comprensión auditiva C2",
+                                                "Simulacro de comprensión lectora C2", "Simulacro de expresión escrita C2", "Simulacro de expresión oral C2",
+                                                "Traducción de textos complejos", "Interpretación de una charla", "Escritura creativa avanzada",
+                                                "Portafolio del estudiante", "Plan de aprendizaje permanente", f"Proyecto final: ensayo y exposición en {n}"]),
     ]
 
 
@@ -140,12 +148,20 @@ LSC_MODULES = [
     ("C1 · Dominio y servicio", ["Interpretación LSC-español: fundamentos", "Interpretación consecutiva", "Interpretación simultánea", "Guía-interpretación para sordociegos",
                                  "Lenguaje especializado", "Accesibilidad de contenidos digitales", "Investigación sobre la LSC", "Comprensión de videos C1",
                                  "Expresión en LSC C1", "Formación continua del intérprete", "Plan de servicio a la comunidad sorda",
-                                 "Proyecto final: exposición en LSC"]),
+                                 "Proyecto integrador C1: exposición en LSC"]),
+    ("C2 · Maestría en LSC", ["Matices y precisión en las señas", "Expresiones idiomáticas avanzadas en LSC", "Humor e ironía en la cultura sorda",
+                              "Registro académico en LSC", "Variación social y regional", "Gramática espacial avanzada", "Video: debates de la comunidad sorda",
+                              "Video: literatura en LSC", "Glosas de textos complejos", "Improvisación en LSC", "Mediación LSC-español",
+                              "Conversación con personas sordas"]),
+    ("C2 · Certificación y proyecto final", ["Evaluación de nivel C2 en LSC", "Estrategias para la evaluación", "Simulacro de comprensión de videos C2",
+                                            "Simulacro de expresión en LSC C2", "Interpretación de una conferencia", "Interpretación en contextos de salud",
+                                            "Interpretación en contextos jurídicos", "Creación de contenido accesible", "Portafolio del estudiante",
+                                            "Ética y liderazgo en la comunidad sorda", "Plan de aprendizaje permanente", "Proyecto final: exposición y narración en LSC"]),
 ]
 
 # Fuentes verificadas el 10 de octubre de 2026: (título, entidad, enlace, para qué sirve)
 CEFR = ("Marco Común Europeo de Referencia para las Lenguas (MCER)", "Consejo de Europa",
-        "https://www.coe.int/en/web/common-european-framework-reference-languages", "Niveles A1 a C1 y lo que se debe lograr en cada uno")
+        "https://www.coe.int/en/web/common-european-framework-reference-languages", "Niveles A1 a C2 y lo que se debe lograr en cada uno")
 OMNIGLOT = ("Omniglot: sistemas de escritura e idiomas", "Omniglot", "https://www.omniglot.com/", "Alfabetos y sistemas de escritura")
 LANGUAGE_SOURCES = {
     "ingles": [("LearnEnglish", "British Council", "https://learnenglish.britishcouncil.org/", "Práctica de escucha, gramática y vocabulario"),
@@ -185,7 +201,7 @@ def language_courses(default_price: int) -> list[dict]:
         "category": "Idiomas",
         "color": "#6D4C41",
         "summary": "Aprende la Lengua de Señas Colombiana para comunicarte con la comunidad sorda: alfabeto manual, vocabulario, gramática visual "
-                   "y cultura sorda, del nivel básico al de servicio e interpretación. Módulos 1 a 5 gratis.",
+                   "y cultura sorda, del nivel básico (A1) al de maestría (C2). Módulos 1 a 5 gratis.",
         "price_cop": default_price,
         "lang": "lsc",
         "modules": LSC_MODULES,

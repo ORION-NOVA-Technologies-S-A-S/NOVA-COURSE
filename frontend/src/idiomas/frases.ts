@@ -23,6 +23,10 @@ export const CATEGORIES = [
   { name: "Familia, comida y lugares", from: 30, to: 40 },
   { name: "Días y colores", from: 40, to: 52 },
   { name: "Tiempo, restaurante y viaje", from: 52, to: 60 },
+  { name: "B1 · Contar y opinar", from: 60, to: 66 },
+  { name: "B2 · En el trabajo", from: 66, to: 72 },
+  { name: "C1 · Argumentar", from: 72, to: 78 },
+  { name: "C2 · Matices y refranes", from: 78, to: 84 },
 ];
 
 /** Qué frases se practican en cada módulo (los módulos 6-10 usan las frases que escriba el administrador). */
@@ -187,3 +191,8 @@ export function phrasesFromContent(content: string): Phrase[] {
 import { PHRASES_EXTRA, SPANISH_EXTRA } from "./frases_extra";
 SPANISH.push(...SPANISH_EXTRA);
 for (const [lang, extra] of Object.entries(PHRASES_EXTRA)) if (PHRASES[lang] && PHRASES[lang].length === 40) PHRASES[lang].push(...extra);
+
+/* Frases 60 a 83 (niveles B1, B2, C1 y C2) */
+import { PHRASES_ADVANCED, SPANISH_ADVANCED } from "./frases_avanzadas";
+SPANISH.push(...SPANISH_ADVANCED);
+for (const [lang, adv] of Object.entries(PHRASES_ADVANCED)) if (PHRASES[lang] && PHRASES[lang].length === 60) PHRASES[lang].push(...adv);
