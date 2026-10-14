@@ -45,7 +45,7 @@ class Settings:
 
     company_name: str = "ORION NOVA TECHNOLOGIES"
     company_motto: str = "Innovamos · Desarrollamos · Conectamos"
-    director_name: str = _env("CERT_SIGNER_NAME", "Director Académico")
+    director_name: str = _env("CERT_SIGNER_NAME", "Director")
     director_title: str = _env("CERT_SIGNER_TITLE", "Orion Nova Technologies")
 
 

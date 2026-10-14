@@ -71,7 +71,7 @@ export function CertificatePage() {
             </div>
             <div className="cert-sign">
               <span className="cert-line" />
-              <b>Director Académico</b>
+              <b>Director</b>
               <span>Orion Nova Technologies</span>
             </div>
             <div className="cert-qr">
